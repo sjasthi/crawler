@@ -1,0 +1,56 @@
+#parse_text_area{
+    display: block;
+    border: 2px solid orange;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    width: 700px;
+    height: 300px;
+    font-size: 14pt;
+    color: black;
+}
+#message2{
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    top: 35px;
+    width: 60%;
+    font-size: 16pt;
+    text-align: center;
+}
+#message{
+    color: green;
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    top: 10px;
+    width: 60%;
+    text-align: center;
+}
+form{
+    display: block;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+}
+form input {
+    margin-left: 50px;
+    font-size: 18pt;
+    font-weight: bold;
+}
+form button{
+    display: block;
+    margin-left: auto;
+    margin-right: 20px;
+    font-size: 14pt;
+    font-weight: bold;
+    border:2px solid orange;
+    background-color: #FFFFFF;
+    width: 200px;
+    padding: 5px;
+    margin-top: -22px;
+
+}

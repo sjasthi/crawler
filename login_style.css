@@ -1,0 +1,27 @@
+fieldset{
+    dispaly: block;
+    margin-top: 30px;
+    border: 2px solid orange;
+    width: 50%;
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+legend{
+    font-size: 18pt;
+}
+form{
+
+    margin-top: 40px;
+}
+input{
+    font-size: 16pt;
+}
+#sub{
+    border: 2px solid orange;
+    background-color: #FFFFFF;
+    width: 100px;
+}
+#errorMessage{
+    color: red;
+}

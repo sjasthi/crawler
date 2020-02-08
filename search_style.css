@@ -1,0 +1,77 @@
+body{
+    overflow-x: hidden;
+}
+#filter {
+    display: inline-block;
+    position: relative;
+    width: 240px;
+    height: 500px;
+    padding: 15px;
+    left: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+#searchForm{
+    margin-top: -12px;
+    color: #FFFFFF;
+}
+#body{
+    margin-left: -5px;
+}
+#container{
+    margin-top: -18px;
+}
+#search-bar {
+    display: block;
+    width: 80%;
+    height: 40px;
+    padding: 5px;
+    font-size: 14pt;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid orange;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+#display{
+    width: 60%;
+    display: block;
+    position: relative;
+    position: relative;
+    border: 1px solid orange;
+    left: 360px;
+    top: -420px;
+}
+#search-button{
+    display: block;
+    position: relative;
+    border: 2px solid orange;
+    background-color: #FFFFFF;
+    margin-left: auto;
+    top: -54px;
+    left: -12px;
+    height: 54px;
+}
+#search-bar-pane{
+    position: relative;
+    left: 330px;
+    top: -460px;
+    width: 60%;
+    height: 60px;
+}
+#result-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+#result-table td{
+    border: 1px solid #DDDDDD;
+    text-align: Center;
+    padding: 5px;
+}
+#table-header{
+    font-weight: bold;
+    color: orange;
+}
+#letter_spiner1{
+    margin-left: 7px;
+    margin-bottom: 5px;
+}

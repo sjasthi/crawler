@@ -1,0 +1,34 @@
+#indexDiv{
+	display:inline-block;
+	position: relative;
+	top: -496px;
+	padding: 5px;
+	width: 20%;
+}
+#chart-zone{
+	display: inline-block;
+	width: 78%;
+}
+#piechart1{
+	display: inline-block;
+	width: 49%;
+}
+#piechart2{
+	display: inline-block;
+	width: 49%;
+}
+#piechart3{
+	display: inline-block;
+	width: 49%;
+}
+#piechart4{
+	display: inline-block;
+	width: 49%;
+}
+#body{
+	margin-left: 10px;
+
+}
+#indexDiv h3{
+	padding-bottom: 5px;
+}
