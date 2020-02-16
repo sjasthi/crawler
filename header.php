@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 <html lang="en">
 <head>
-    <link href="style.css" rel="stylesheet" type="text/css"/></head>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/></head>
 <table width="100%" border="0" cellspacing="0" class="headerTable">
     <tr>
         <td rowspan="2">

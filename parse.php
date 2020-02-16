@@ -12,7 +12,7 @@ if($_SESSION['loggedIn'] != "adminIN"){
 }
 
 require "header.php";
-include('telugu_parser.php');
+include('indic-wp-master/telugu_parser.php');
 $message = "";
 $inserted_words = "";
 $inserted_message = "";
@@ -166,7 +166,7 @@ if(isset($_POST['parse'])){
 <!DOCTYPE html>
 <html lang="en">
 <header>
-    <link href="parse_style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/parse_style.css" rel="stylesheet" type="text/css"/>
 </header>
 
 <div id="container">

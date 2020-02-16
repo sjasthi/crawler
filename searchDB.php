@@ -1,7 +1,7 @@
 <?php
 require "header.php";
 include('search_fns.php');
-include('word_processor.php');
+include('indic-wp-master/word_processor.php');
 include('telugu_parser.php');
 
 $searchDropdown = isset($_POST['searchOptions']);
@@ -62,7 +62,7 @@ if(isset ($_POST['search'])) {
 <!DOCTYPE html>
 <html lang="en">
 <header>
-    <link href="search_style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/search_style.css" rel="stylesheet" type="text/css"/>
 </header>
 <body>
 <div id="container">
@@ -96,7 +96,7 @@ if(isset ($_POST['search'])) {
             <div id="search-bar-pane">
                 <input type="text" id="search-bar" name="search-bar" placeholder="Enter Search Criteria">
                 <button type="sumit" id="search-button" value="search" name="search">
-                    <img src="search.png" alt="Search Icon" height="42" width="42">
+                    <img src="images/search.png" alt="Search Icon" height="42" width="42">
                 </button>
             </div>
         </form>

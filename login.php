@@ -58,7 +58,7 @@ if (isset($_POST['submit']))
 ?>
 
     <head>
-        <link href="login_style.css" rel="stylesheet" type="text/css">
+        <link href="css/login_style.css" rel="stylesheet" type="text/css">
     </head>
     <div id="container">
         <div id="loginDiv">

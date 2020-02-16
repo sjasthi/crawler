@@ -60,7 +60,7 @@ DEFINE('DATABASE_PASSWORD', '');
 		form{
 			margin-left: 30px;
 			margin-top: 30px;
-			border: 2px solid red:
+			border: 2px solid red;
 		}
 		label{
 			display: inline-block;
