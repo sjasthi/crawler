@@ -21,7 +21,7 @@ $wordsInBank = $telWordsInBank + $engWordsInBank;
 
 <html>
 <head>
-    <link href="stats_style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/stats_style.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});

@@ -8,7 +8,7 @@ if($_SESSION['loggedIn'] != "adminIN"){
 
 require "header.php";
 include('crawl_fns.php');
-include('telugu_parser.php');
+include('indic-wp-master/telugu_parser.php');
 $language = "english";
 $sunset = isset($_POST['lapseOptions']);
 $depth = isset($_POST['depthOptions']);
@@ -137,7 +137,7 @@ function crawl($input, $language, $sunset, $depth){
 ?>
 
     <header>
-        <link href="crawl_style.css" rel="stylesheet" type="text/css">
+        <link href="css/crawl_style.css" rel="stylesheet" type="text/css">
     </header>
     <div id="container">
         <div id="body">

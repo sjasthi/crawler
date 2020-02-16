@@ -6,7 +6,7 @@
 
 require "header.php";
 include('search_fns.php');
-include('word_processor.php');
+include('indic-wp-master/word_processor.php');
 
 
 

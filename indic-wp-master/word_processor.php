@@ -38,11 +38,8 @@ class wordProcessor {
 	// constructor
 	function wordProcessor($word, $language) {
 		if(is_string($word)) return $this->setWord($word, $language);
+	}
 
-    }
-
-
-	
 	// setter for the word 
 	// this also parses the word to logical characters 
 	function setWord($a_word, $a_language) {

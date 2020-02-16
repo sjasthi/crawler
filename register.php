@@ -74,7 +74,7 @@ DEFINE('DATABASE_PASSWORD', '');
 <head>
 	<title>Register Form</title>
 	<link href="" rel="stylesheet" type="text/css"/>
-    	<script type="text/javascript" src="register.fns.js"></script>
+    	<script type="text/javascript" src="js/register.fns.js"></script>
 </head>
 <body>
     <div id="container">
