@@ -35,10 +35,10 @@ class wordProcessor {
 	// That may work for English, but not for other multi-byte languages
 	protected $code_points = array();
 
-	// constructor
-	function wordProcessor($word, $language) {
-		if(is_string($word)) return $this->setWord($word, $language);
-	}
+	// Constructor
+	function __construct($word, $language) {
+        if(is_string($word)) return $this->setWord($word, $language);
+    }
 
 	// setter for the word 
 	// this also parses the word to logical characters 

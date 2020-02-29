@@ -6,12 +6,10 @@ DEFINE('DATABASE_DATABASE', 'crawler');
 DEFINE('DATABASE_USER', 'root');
 DEFINE('DATABASE_PASSWORD', '');
 
-
-
+// Include the word processor file.
+include('indic-wp-master/word_processor.php');
 
 $option = $_GET['t'];
-$col1 = "";
-$col2 = "";
 $action = (isset($_GET['action']));
 $delete_op = (isset($_GET['doption']));
 $col_attr = "";
@@ -47,6 +45,12 @@ if ($action == "delete") {
 		exit;
 	}
 }
+
+// If the user selects action 'frequency'...
+if ($action == "frequency") {
+	// Do some work here...
+	echo "Howdy";	
+}
 ?>
 <!DOCTYPE html>
 
@@ -58,7 +62,7 @@ if ($action == "delete") {
 	<!-- Styles -->
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/dataTables.bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="/media/css/site-examples.css?_=c863b7da7e72b0e94c16b81c38293467">	
+	<link rel="stylesheet" type="text/css" href="/media/css/site-examples.css?_=c863b7da7e72b0e94c16b81c38293467">
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
 
 	<!-- JS -->
@@ -105,15 +109,25 @@ if ($action == "delete") {
 
 					<tr>
 
-						<th><?php echo $col1; ?></th>
+						<?php
 
-						<th><?php echo $col2; ?></th>
+						if (isset($col1)) {
+							echo "<th>$col1</th>";
+						}
+						if (isset($col2)) {
+							echo "<th>$col2</th>";
+						}
+						if (isset($col3)) {
+							echo "<th>$col3</th>";
+						}
+						if (isset($col4)) {
+							echo "<th>$col4</th>";
+						}
+						if (isset($col5)) {
+							echo "<th>$col5</th>";
+						}
 
-						<th><?php echo $col3; ?></th>
-
-						<th><?php echo $col4; ?></th>
-
-						<th><?php echo $col5; ?></th>
+						?>
 
 						<th>Action</th>
 
@@ -195,15 +209,25 @@ if ($action == "delete") {
 
 					<tr>
 
-						<th><?php echo $col1; ?></th>
+						<?php
 
-						<th><?php echo $col2; ?></th>
+						if (isset($col1)) {
+							echo "<th>$col1</th>";
+						}
+						if (isset($col2)) {
+							echo "<th>$col2</th>";
+						}
+						if (isset($col3)) {
+							echo "<th>$col3</th>";
+						}
+						if (isset($col4)) {
+							echo "<th>$col4</th>";
+						}
+						if (isset($col5)) {
+							echo "<th>$col5</th>";
+						}
 
-						<th><?php echo $col3; ?></th>
-
-						<th><?php echo $col4; ?></th>
-
-						<th><?php echo $col5; ?></th>
+						?>
 
 						<th>Action</th>
 
