@@ -13,6 +13,7 @@ if($_SESSION['loggedIn'] != "adminIN"){
 
 require "header.php";
 include('indic-wp-master/telugu_parser.php');
+include('indic-wp-master/word_processor.php');
 $message = "";
 $inserted_words = "";
 $inserted_message = "";
@@ -66,27 +67,40 @@ if(isset($_POST['parse'])){
                 exit;
             }
 
+            // Finds the number of words in the database.
             $numRows = $result -> num_rows;
+
+            if ($numRows == 0){                
+                $dbcn->query("INSERT INTO $language (word, char_len, strength, weight) VALUES(' ', 0, 0, 0");
+                $numRows = 1;
+            }
 
             if($numRows > 0){
                 $index = $numRows;
                 $hold_word = "";
 
+                // Iterates over the words in the DB, searching for a match.
                 for($i = 0; $i < $index; $i++){
                     $row = $result -> fetch_array();
 
+                    // If the two words are the same...
                     if(!strcasecmp($row[1], $word) == 0) {
                         $hold_word = $word;
                     }
+                    //...Otherwise...
                     else {
                         $hold_word = "";
                         break;
                     }
                 }
 
+                // $hold_word having a value means that this word is already in the DB.
                 if($hold_word !== "") {
                     $char_len = $len;
-                    $sql2 = "INSERT INTO $language VALUES(null, '$word', '$char_len')";
+                    $myclass = new wordProcessor($word, $language);    
+                    $strength = $myclass->getWordStrength($language);
+                    $weight = $myclass->getWordWeight($language);
+                    $sql2 = "INSERT INTO $language (word, char_len, strength, weight) VALUES('".$word."', '".$char_len."', $strength, $weight)";
                     $result2 = $dbcn->query($sql2);
 
                     if(!$result2){
@@ -181,7 +195,7 @@ echo $existed_message;
 echo $existed_words;
 ?>
         </textarea>
-        <form action="<? $_SERVER['PHP_SELF'] ?>" method="post" mane="parsing_form" id="parsing">
+        <form action="<?=$_SERVER['PHP_SELF']; ?>" method="post" mane="parsing_form" id="parsing">
             <input type="radio" name="language" value="english" checked>English
             <input type="radio" name="language" value="telugu">Telugu
             <button type="submit" value="parse" name="parse">Parse</button>

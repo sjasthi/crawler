@@ -1,5 +1,4 @@
 <?php
-
 	require "header.php";
 ?>
 <!DOCTYPE html>
@@ -30,7 +29,9 @@
 		<a href=""><img src="images/import_logo.PNG" alt="import" height="120" width="15%"></a>
 		<a href=""><img src="images/export_logo.PNG" alt="export" height="120" width="15%"></a>
 		<a href=""><img src="images/backup_logo.PNG" alt="backup" height="120" width="15%"></a>
-		<a href=""><img src="images/help_logo.PNG" alt="help" height="120" width="15%"></a>
+		<a href=""><img src="images/help_logo.PNG" alt="help" height="120" width="15%"></a><br />
+		<a href="telugu_characters_frequency_table.php?t=frequency"><img src="images/telegu_frequency_logo.PNG" alt="frequency" height="120" width="15%"></a>
+		<a href="telugu_characters_frequency_table.php?t=null"><img src="images/telugu_count_logo.PNG" alt="count" height="120" width="15%"></a>
 	</div>
 </body>
 </html>
