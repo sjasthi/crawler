@@ -100,7 +100,7 @@ if(isset($_POST['parse'])){
                     $myclass = new wordProcessor($word, $language);    
                     $strength = $myclass->getWordStrength($language);
                     $weight = $myclass->getWordWeight($language);
-                    $sql2 = "INSERT INTO $language (word, char_len, strength, weight) VALUES('".$word."', '".strlen($word)."', $strength, $weight)";
+                    $sql2 = "INSERT INTO $language (word, char_len, strength, weight) VALUES('".$word."', '".$char_len."', $strength, $weight)";
                     $result2 = $dbcn->query($sql2);
 
                     if(!$result2){

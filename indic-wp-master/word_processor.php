@@ -1,5 +1,4 @@
 ﻿<?php
-//require("telugu_parser.php");
 
 
 /*
@@ -16,7 +15,7 @@
  * 
  *   The logic of splitting an "input string" to a set of logical characters
  *   would be different for each Language
- *   For example, "telugu_parser.php" focusses on Telugu parser
+ *   For example, "indic-wp-master/telugu_parser.php" focusses on Telugu parser
  */
 
 
@@ -75,7 +74,7 @@ class wordProcessor {
 			$this->logical_chars = parseToLogicalCharacters($this->getCodePoints());
 			return $this->getLogicalChars();
 		}else{
-			include_once 'telugu_parser.php';
+			include_once 'indic-wp-master/telugu_parser.php';
 			$this->code_points = parseToCodePoints($word);
 			$this->logical_chars = parseToLogicalCharacters($this->getCodePoints());
 			return $this->getLogicalChars();
