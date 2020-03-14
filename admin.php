@@ -20,11 +20,11 @@
 </head>
 <body>
 	<div id="portal">
-		<a href="list.php?t=english"><img src="images/enword_logo.PNG" alt="enword" height="120" width="15%"></a>
-		<a href="list.php?t=telugu"><img src="images/telword_log.PNG" alt="telword" height="120" width="15%"></a>
-		<a href="list.php?t=crawlurl"><img src="images/crawlurl_logo.PNG" alt="crawlurl" height="120" width="15%"></a>
-		<a href="list.php?t=suggesturl"><img src="images/suggest_logo.PNG" alt="suggest" height="120" width="15%"></a>
-		<a href="list.php?t=users"><img src="images/useradmin_logo.PNG" alt="useradmin" height="120" width="15%"></a><br />
+		<a href="list_english_words.php"><img src="images/enword_logo.PNG" alt="enword" height="120" width="15%"></a>
+		<a href="list_telugu_words.php"><img src="images/telword_log.PNG" alt="telword" height="120" width="15%"></a>
+		<a href="list_crawled_urls.php"><img src="images/crawlurl_logo.PNG" alt="crawlurl" height="120" width="15%"></a>
+		<a href="list_suggested_urls.php"><img src="images/suggest_logo.PNG" alt="suggest" height="120" width="15%"></a>
+		<a href="user_admin.php"><img src="images/useradmin_logo.PNG" alt="useradmin" height="120" width="15%"></a><br />
 		<a href=""><img src="images/configure_logo.PNG" alt="configure" height="120" width="15%"></a>
 		<a href=""><img src="images/import_logo.PNG" alt="import" height="120" width="15%"></a>
 		<a href=""><img src="images/export_logo.PNG" alt="export" height="120" width="15%"></a>
