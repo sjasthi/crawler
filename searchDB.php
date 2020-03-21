@@ -180,7 +180,7 @@ if (isset($_POST['search'])) {
                             $prefix_string = substr($row[1], 0, strlen($input));
                             $suffix_string = substr($row[1], (strlen($row[1]) - strlen($input)));
                             $contain_at = $row[1]{
-                                $contain_value - 1};
+                            $contain_value - 1};
                             $row[1] = strtolower($row[1]);
 
                             // If the Telugu language is selected...
@@ -198,38 +198,15 @@ if (isset($_POST['search'])) {
                                 }
 
                                 // =========================================================================
-
-                                // Prefix.
-                                if ($option === "prefix" && $limit_pre < $result_limit) {
-
-                                    // For each prefix character...
-                                    $match = true;
-                                    if (isset($word_from_db[$i])) {                                        
-                                        for ($i = 0; $i < count($user_search_string); $i++) {
-                                            //... compare against characters in the word from the DB.
-                                            if ($word_from_db[$i] != $user_search_string[$i]) {
-                                                // No match. break.
-                                                $match = false;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    else{
-                                        $match = false;
-                                    }
-
-                                    // If the prefix matches...
-                                    if ($match == true) {
-                                        echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                        $no_result_found++;
-                                        $limit_pre++;
-                                    }
-                                }
                             }
 
                             if ($input === "") {
                                 $no_result_found = 0;
-                            } else if (strcasecmp($contain_at, $input) == 0 && $option === "contains-at" && $limit_con < $result_limit) {
+                            } else if ($language == "english" && strcasecmp($contain_at, $input) == 0 && $option === "contains-at" && $limit_con < $result_limit) {
+                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                $no_result_found++;
+                                $limit_con++;
+                            } else if ($language == "telugu" && $option === "contains-at" && $limit_con < $result_limit && isset($word_from_db[0]) && $word_from_db[$contain_value - 1] == $user_search_string[0]) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_con++;
@@ -237,15 +214,81 @@ if (isset($_POST['search'])) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_pre++;
-                            } else if (strcasecmp($suffix_string, $input) == 0 && $option === "suffix" && $limit_suf < $result_limit) {
+                            } else if ($language == "telugu" && $option === "prefix" && $limit_pre < $result_limit) {
+                                // For each prefix character...
+                                $match = true;
+                                if (isset($word_from_db[0])) {
+                                    for ($i = 0; $i < count($user_search_string); $i++) {
+                                        //... compare against characters in the word from the DB.
+                                        if ($word_from_db[$i] != $user_search_string[$i]) {
+                                            // No match. break.
+                                            $match = false;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $match = false;
+                                }
+
+                                // If successful...
+                                if ($match == true) {
+                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                    $no_result_found++;
+                                    $limit_pre++;
+                                }
+                            } else if ($language == "english" && strcasecmp($suffix_string, $input) == 0 && $option === "suffix" && $limit_suf < $result_limit) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_suf++;
-                            } else if (strcasecmp($row[1], $input) == 0 && strcasecmp($option, "whole") == 0 && $limit_whole < $result_limit) {
+                            } else if ($language == "telugu" && strcasecmp($suffix_string, $input) == 0 && $option === "suffix" && $limit_suf < $result_limit) {
+                                // For each suffix character...
+                                $match = true;
+                                $search_string_length = count($user_search_string) - 1;
+                                $word_from_db_length = count($word_from_db) - 1;
+                                if (isset($word_from_db[0])) {
+                                    for ($i = 0; $i < count($user_search_string); $i++) {
+                                        //... compare against characters in the word from the DB.
+                                        if ($word_from_db[$word_from_db_length - $i] != $user_search_string[$search_string_length - $i]) {
+                                            // No match. break.
+                                            $match = false;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $match = false;
+                                }
 
+                                // If successful...
+                                if ($match == true) {
+                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                    $no_result_found++;
+                                    $limit_suf++;
+                                }
+                            } else if ($language == "english" && strcasecmp($row[1], $input) == 0 && strcasecmp($option, "whole") == 0 && $limit_whole < $result_limit) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_whole++;
+                            } else if ($language == "telugu" && strcasecmp($option, "whole") == 0 && $limit_whole < $result_limit) {
+                                $match = true;
+                                if (isset($word_from_db[$i]) && count($user_search_string) == count($word_from_db)) {
+                                    for ($i = 0; $i < count($user_search_string); $i++) {
+                                        //... compare against characters in the word from the DB.
+                                        if ($word_from_db[$i] != $user_search_string[$i]) {
+                                            // No match. break.
+                                            $match = false;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $match = false;
+                                }
+
+                                // If successful...
+                                if ($match == true) {
+                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                    $no_result_found++;
+                                    $limit_whole++;
+                                }
                             } else if ($language == "english" && preg_match("/$input/i", $row[1]) && $option === "contains-sub" && $limit_conat < $result_limit) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
@@ -266,10 +309,36 @@ if (isset($_POST['search'])) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_con++;
-                            } else if ($language == "telugu" && preg_match("/$input/i", $row[1]) && $option === "contains" && $limit_conat < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_con++;
+                            } else if ($language == "telugu" && $option === "contains" && $limit_conat < $result_limit) {
+                                $match = true;
+                                if (isset($word_from_db[0])) {
+                                    for ($i = 0; $i < count($user_search_string); $i++) {
+
+                                        // If the character exists in the word...
+                                        $x = false;
+                                        for ($j = 0; $j < count($word_from_db); $j++) {
+                                            if ($user_search_string[$i] == "," || $user_search_string[$i] == $word_from_db[$j]) {
+                                                $x = true;
+                                                break;
+                                            }
+                                        }
+
+                                        // The character the user entered was not found in the word.
+                                        if ($x == false) {
+                                            $match = false;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $match = false;
+                                }
+
+                                // If successful...
+                                if ($match == true) {
+                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                    $no_result_found++;
+                                    $limit_con++;
+                                }
                             }
                         }
 
