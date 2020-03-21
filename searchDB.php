@@ -93,7 +93,9 @@ if (isset($_POST['search'])) {
                 </div>
 
                 <div id="search-bar-pane">
-                    <input type="text" id="search-bar" name="search-bar" placeholder="Enter Search Criteria">
+                    <input type="text" id="search-bar" name="search-bar" placeholder="Enter Search Criteria" <?php if (isset($_POST['search-bar'])) {
+                                                                                                                    echo "value='" . $_POST['search-bar'] . "'";
+                                                                                                                } ?>>
                     <button type="sumit" id="search-button" value="search" name="search">
                         <img src="images/search.png" alt="Search Icon" height="42" width="42">
                     </button>
@@ -101,14 +103,18 @@ if (isset($_POST['search'])) {
             </form>
 
             <div id="display">
+
+                <!-- Results -->
                 <table id="result-table">
+                    <!-- Header -->
                     <tr>
                         <td colspan="2" id="table-header">Result Words</td>
                     </tr>
 
-
+                    <!-- Processing User Request -->
                     <?php
 
+                    // Process search criteria.
                     if ($language == "english" && $option == "contains-subs") {
                         $input = explode(",", $input);
                         $input = implode($input);
@@ -129,29 +135,31 @@ if (isset($_POST['search'])) {
                         $input = implode($input);
                     }
 
+                    // Connect to DB
                     DEFINE('DATABASE_HOST', 'localhost');
                     DEFINE('DATABASE_DATABASE', 'crawler');
                     DEFINE('DATABASE_USER', 'root');
                     DEFINE('DATABASE_PASSWORD', '');
-
-
                     $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
                     $dbcn->set_charset("utf8");
                     if (mysqli_connect_errno()) {
                         echo "<p>Error creating database connection</p>";
                         exit;
                     }
+
+                    // Get all English and Telugu words within the specified word length range.
                     $sql = "SELECT E.en_id, E.word, E.char_len FROM english AS E WHERE E.char_len >= $min_letter AND E.char_len <= $max_letter UNION 
                         SELECT T.tel_id, T.word, T.char_len FROM telugu AS T WHERE T.char_len >= $min_letter AND T.char_len <= $max_letter";
                     $result = $dbcn->query($sql);
-
                     if (!$result) {
                         echo ("<p>Unable to query database at this time.</p>");
                         exit;
                     }
 
+                    // How many rows were retrieved.
                     $numRows = $result->num_rows;
 
+                    // If any were found...
                     if ($numRows > 0) {
                         $index = $numRows;
                         $no_result_found = 0;
@@ -162,34 +170,59 @@ if (isset($_POST['search'])) {
                         $limit_whole = 0;
                         $count = 0;
 
+                        // Loop over each row.
                         for ($i = 0; $i < $index; $i++) {
+
+                            // Collect substrings from the word to be compared
+                            // against the user's search criteria.
+                            // $row[1] is the word.
                             $row = $result->fetch_array();
                             $prefix_string = substr($row[1], 0, strlen($input));
                             $suffix_string = substr($row[1], (strlen($row[1]) - strlen($input)));
                             $contain_at = $row[1]{
-                            $contain_value - 1};
+                                $contain_value - 1};
                             $row[1] = strtolower($row[1]);
 
+                            // If the Telugu language is selected...
                             if ($language === "telugu") {
-                                $tel_logic = parseToLogicalCharacters($row[1]);
-                                $tel_input = parseToLogicalCharacters($input);
+
+                                // Parse the word (from the DB) into logical characters.
+                                $word_from_db = parseToLogicalCharacters($row[1]);
+
+                                // Parse the user's input (search criteria) into logical characters.
+                                $user_search_string = parseToLogicalCharacters($input);
 
                                 // Handle encounters with unknown characters.
-                                if (count($tel_logic) > $contain_value - 1){
-                                    $contain_at = $tel_logic[$contain_value - 1];
+                                if (count($word_from_db) > $contain_value - 1) {
+                                    $contain_at = $word_from_db[$contain_value - 1];
                                 }
 
-                                $bcount = 0;
-                                for ($a = 0; $a < count($tel_input); $a++) {
-                                    for ($b = $bcount; $b < count($tel_logic); $b++) {
-                                        if (isset($tel_logic[$a], $tel_logic[$b]) == 0 && $count < count($tel_input)) {
-                                            $count++;
-                                            $bcount++;
-                                            break;
-                                        } else if ($count == count($tel_input)) {
-                                            break;
-                                        } else
-                                            $count = 0;
+                                // =========================================================================
+
+                                // Prefix.
+                                if ($option === "prefix" && $limit_pre < $result_limit) {
+
+                                    // For each prefix character...
+                                    $match = true;
+                                    if (isset($word_from_db[$i])) {                                        
+                                        for ($i = 0; $i < count($user_search_string); $i++) {
+                                            //... compare against characters in the word from the DB.
+                                            if ($word_from_db[$i] != $user_search_string[$i]) {
+                                                // No match. break.
+                                                $match = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        $match = false;
+                                    }
+
+                                    // If the prefix matches...
+                                    if ($match == true) {
+                                        echo "<tr><td colspan='2'>$row[1]</td></tr>";
+                                        $no_result_found++;
+                                        $limit_pre++;
                                     }
                                 }
                             }
@@ -200,7 +233,7 @@ if (isset($_POST['search'])) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_con++;
-                            } else if (strcasecmp($prefix_string, $input) == 0 && $option === "prefix" && $limit_pre < $result_limit) {
+                            } else if ($language == "english" && strcasecmp($prefix_string, $input) == 0 && $option === "prefix" && $limit_pre < $result_limit) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_pre++;
