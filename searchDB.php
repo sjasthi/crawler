@@ -148,8 +148,7 @@ if (isset($_POST['search'])) {
                     }
 
                     // Get all English and Telugu words within the specified word length range.
-                    $sql = "SELECT E.en_id, E.word, E.char_len FROM english AS E WHERE E.char_len >= $min_letter AND E.char_len <= $max_letter UNION 
-                        SELECT T.tel_id, T.word, T.char_len FROM telugu AS T WHERE T.char_len >= $min_letter AND T.char_len <= $max_letter";
+                    $sql = "SELECT E.en_id, E.word, E.char_len FROM english AS E WHERE E.char_len >= $min_letter AND E.char_len <= $max_letter UNION SELECT T.tel_id, T.word, T.char_len FROM telugu AS T WHERE T.char_len >= $min_letter AND T.char_len <= $max_letter";
                     $result = $dbcn->query($sql);
                     if (!$result) {
                         echo ("<p>Unable to query database at this time.</p>");
@@ -177,11 +176,19 @@ if (isset($_POST['search'])) {
                             // against the user's search criteria.
                             // $row[1] is the word.
                             $row = $result->fetch_array();
-                            $prefix_string = substr($row[1], 0, strlen($input));
-                            $suffix_string = substr($row[1], (strlen($row[1]) - strlen($input)));
-                            $contain_at = $row[1]{
-                            $contain_value - 1};
-                            $row[1] = strtolower($row[1]);
+                            $current_word = $row[1];
+                            $current_word_length = strlen($row[1]);
+                            $contain_at_index = $contain_value - 1;
+
+                            // Other metadata
+                            $prefix_string = substr($current_word, 0, strlen($input));
+                            $suffix_string = substr($current_word, ($current_word_length - strlen($input)));
+
+                            // If the contain at index is within the length of the word...
+                            if ($current_word_length > $contain_at_index) {
+                                // ... $contain_at will contain the character at that index.
+                                $contain_at = substr($current_word, $contain_at_index);
+                            }
 
                             // If the Telugu language is selected...
                             if ($language === "telugu") {
@@ -193,8 +200,8 @@ if (isset($_POST['search'])) {
                                 $user_search_string = parseToLogicalCharacters($input);
 
                                 // Handle encounters with unknown characters.
-                                if (count($word_from_db) > $contain_value - 1) {
-                                    $contain_at = $word_from_db[$contain_value - 1];
+                                if (count($word_from_db) > $contain_at_index) {
+                                    $contain_at = $word_from_db[$contain_at_index];
                                 }
 
                                 // =========================================================================
@@ -206,7 +213,14 @@ if (isset($_POST['search'])) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_con++;
-                            } else if ($language == "telugu" && $option === "contains-at" && $limit_con < $result_limit && isset($word_from_db[0]) && $word_from_db[$contain_value - 1] == $user_search_string[0]) {
+                                // put in a check in line 218 to make sure the index were searching is less than the total number of characters in the word
+                            } else if (
+                                $language == "telugu" && $option === "contains-at" &&
+                                $limit_con < $result_limit &&
+                                isset($word_from_db[0]) &&
+                                count($word_from_db) > $contain_at_index &&
+                                $word_from_db[$contain_at_index] == $user_search_string[0]
+                            ) {
                                 echo "<tr><td colspan='2'>$row[1]</td></tr>";
                                 $no_result_found++;
                                 $limit_con++;
@@ -223,6 +237,10 @@ if (isset($_POST['search'])) {
                                         if ($word_from_db[$i] != $user_search_string[$i]) {
                                             // No match. break.
                                             $match = false;
+
+                                            // Increment outer loop
+                                            $i++;
+
                                             break;
                                         }
                                     }
@@ -251,6 +269,10 @@ if (isset($_POST['search'])) {
                                         if ($word_from_db[$word_from_db_length - $i] != $user_search_string[$search_string_length - $i]) {
                                             // No match. break.
                                             $match = false;
+
+                                            // Increment outer loop
+                                            $i++;
+
                                             break;
                                         }
                                     }
@@ -274,8 +296,12 @@ if (isset($_POST['search'])) {
                                     for ($i = 0; $i < count($user_search_string); $i++) {
                                         //... compare against characters in the word from the DB.
                                         if ($word_from_db[$i] != $user_search_string[$i]) {
-                                            // No match. break.
+                                            // No match. break.                                            
                                             $match = false;
+
+                                            // Increment outer loop
+                                            $i++;
+
                                             break;
                                         }
                                     }
