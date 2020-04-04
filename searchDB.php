@@ -1,24 +1,48 @@
 <?php
+
+// ============== Includes ==============
+
 require "header.php";
+
 include('search_fns.php');
 include('indic-wp-master/word_processor.php');
 include('indic-wp-master/telugu_parser.php');
 
+// ============== Variables ==============
+
+// DB config.
+DEFINE('DATABASE_HOST', 'localhost');
+DEFINE('DATABASE_DATABASE', 'crawler');
+DEFINE('DATABASE_USER', 'root');
+DEFINE('DATABASE_PASSWORD', '');
+
+// Column headers.
+$col1 = "ID";
+$col2 = "Word";
+$col3 = "Length";
+$col4 = "Strength";
+$col5 = "Weight";
+
+// Search Options
 $searchDropdown = isset($_POST['searchOptions']);
 $searchRadio =  isset($_POST['langRadio']);
-$input = "@#$";
+$user_search_string = ""; //@#$ Use as default if you don't want the search to run automatically.
 $message = "No Result Found";
 $word = "";
-$language = "english";
+$language = "telugu";
 $option = "contains";
 $contain_value = 1;
 $prefix = "prefix";
 $suffix = "suffix";
-$min_letter = 2;
-$max_letter = 10;
+$length_equals = 3;
+$length_between_from = 2;
+$length_between_to = 10;
 $result_limit = isset($_POST['limit']);
 $relimit = 100;
 $class = new wordProcessor($word, $language);
+
+// FP6
+$contain_at_index = 1; // [E4]
 
 ?>
 
@@ -31,358 +55,705 @@ if (isset($_POST['search'])) {
 
     if (isset($_POST['option'])) {
         $option = $_POST['option'];
+    }
 
-        if (isset($_POST['spinner1'])) {
-            $contain_value = $_POST['spinner1'];
+    // Check the appropriate search string length.
+    if ((isset($_POST['search_string_length']))) {
+        switch ($_POST['search_string_length']) {
+            case "exactly":
+                if (isset($_POST['exact_length'])) {
+                    $length_equals = $_POST['exact_length'];
+                }
+                break;
+            case "between":
+                if (isset($_POST['between_length_a'])) {
+                    $length_between_from = $_POST['between_length_a'];
+                }
+                if (isset($_POST['between_length_b'])) {
+                    $length_between_to = $_POST['between_length_b'];
+                }
+                break;
         }
     }
 
-    if (isset($_POST['spinner2'])) {
-        $min_letter = $_POST['spinner2'];
+    // E4
+    if (isset($_POST['contain_at_index'])) {
+        $contain_at_index = $_POST['contain_at_index'];
     }
 
-    if (isset($_POST['spinner3'])) {
-        $max_letter = $_POST['spinner3'];
-    }
-
-    if (isset($_POST['limit'])) {
-        $result_limit = $_POST['limit'];
-    }
-
-
-    $input = stripslashes($_POST['search-bar']);
-    $input = preg_replace('/^[\s]+$/', '', $input);
-    $input = explode(" ", $input);
-    $input = implode($input);
+    // IMPORTANT: User search string
+    $user_search_string = stripslashes($_POST['search-bar']);
+    $user_search_string = preg_replace('/^[\s]+$/', '', $user_search_string);
+    $user_search_string = explode(" ", $user_search_string);
+    $user_search_string = implode($user_search_string);
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<header>
+
+<head>
+    <!-- Styles -->
     <link href="css/search_style.css" rel="stylesheet" type="text/css" />
-</header>
+
+    <!-- Bootstrap -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
 
 <body>
-    <div id="container">
-        <div id="body">
+
+    <div class="container-fluid">
+        <div class="row">
             <form action="<?= $_SERVER['PHP_SELF']; ?>" method="POST" id="searchForm" autocomplete="off">
-                <div id="filter">
-                    <label>Select Language</label><br>
-                    <input type="radio" name="language" value="english" id="rad-1" checked <?php if (isset($_POST['language']) && $_POST['language'] == 'english') echo ' checked="checked"'; ?>>English<br>
-                    <input type="radio" name="language" value="telugu" id="rad-2" <?php if (isset($_POST['language']) && $_POST['language'] == 'telugu') echo ' checked="checked"'; ?>>Telugu<br><br>
+                <!-- CRITERIA -->
+                <div class="col-lg-2 col-sm-3 col-xs-2 filter" style="margin-top:-8px; margin-left:-5px; padding-top:10px">
+                    <!-- Header 1 -->
+                    <p class="searchHeader">Constraints</p>
 
-                    <label>Search By</label><br>
-                    <input type="radio" name="option" value="contains-sub" id="rad-3" checked <?php if (isset($_POST['option']) && $_POST['option'] == 'contains-sub') echo ' checked="checked"'; ?>>Contains substring<br />
-                    <input type="radio" name="option" value="contains-subs" id="rad-4" <?php if (isset($_POST['option']) && $_POST['option'] == 'contains-subs') echo ' checked="checked"'; ?>>Contains substrings<br />
-
-                    <input type="radio" name="option" value="contains" id="rad-5" <?php if (isset($_POST['option']) && $_POST['option'] == 'contains') echo ' checked="checked"'; ?>>Contains Characters<br />
-                    <input type="radio" name="option" value="contains-at" id="rad-6" <?php if (isset($_POST['option']) && $_POST['option'] == 'contains-at') echo ' checked="checked"'; ?>>Contains Character at
-                    <input type="number" name="spinner1" value=<?php echo $contain_value ?> id="contain_spinner" min="1" max="99" size="6"><br>
-                    <input type="radio" name="option" value="prefix" id="rad-7" <?php if (isset($_POST['option']) && $_POST['option'] == 'prefix') echo ' checked="checked"'; ?>>Prefix<br>
-                    <input type="radio" name="option" value="suffix" id="rad-8" <?php if (isset($_POST['option']) && $_POST['option'] == 'suffix') echo ' checked="checked"'; ?>>Suffix<br>
-                    <input type="radio" name="option" value="whole" id="rad-9" <?php if (isset($_POST['option']) && $_POST['option'] == 'whole') echo ' checked="checked"'; ?>>Whole words<br><br>
-
-                    <label>Length of words</label><br>
-                    Minimum <input type="number" name="spinner2" value=<?php echo $min_letter ?> id="letter_spiner1" min="2" max="99"><br>
-                    Maximum <input type="number" name="spinner3" value=<?php echo $max_letter ?> id="letter_spiner2" min="2" max="10"><br><br>
-
-                    <label>Result Limit</label>
-                    <input type="number" name="limit" value=<?php echo $relimit ?> min="1" max="100">
-
-                </div>
-
-                <div id="search-bar-pane">
-                    <input type="text" id="search-bar" name="search-bar" placeholder="Enter Search Criteria" <?php if (isset($_POST['search-bar'])) {
-                                                                                                                    echo "value='" . $_POST['search-bar'] . "'";
-                                                                                                                } ?>>
-                    <button type="sumit" id="search-button" value="search" name="search">
-                        <img src="images/search.png" alt="Search Icon" height="42" width="42">
-                    </button>
-                </div>
-            </form>
-
-            <div id="display">
-
-                <!-- Results -->
-                <table id="result-table">
-                    <!-- Header -->
-                    <tr>
-                        <td colspan="2" id="table-header">Result Words</td>
-                    </tr>
-
-                    <!-- Processing User Request -->
                     <?php
 
-                    // Process search criteria.
-                    if ($language == "english" && $option == "contains-subs") {
-                        $input = explode(",", $input);
-                        $input = implode($input);
+                    // ============== Variables ==============
+                    $checked = "checked='checked'";
+                    $checkA1 = null;
+                    $checkA2 = null;
+
+                    $checkB1 = null;
+                    $checkB2 = null;
+                    $checkB3 = null;
+
+                    $checkC = null;
+                    $checkC1 = null;
+                    $checkC2 = null;
+                    $checkC3 = null;
+                    $checkC4 = null;
+                    $checkC5 = null;
+                    $checkC6 = null;
+
+                    $checkD = null;
+                    $checkD1 = null;
+                    $checkD2 = null;
+                    $checkD3 = null;
+                    $checkD4 = null;
+                    $checkD5 = null;
+                    $checkD6 = null;
+
+                    $checkE = null;
+                    $checkE1 = null;
+                    $checkE2 = null;
+                    $checkE3 = null;
+                    $checkE4 = null;
+                    $checkE5 = null;
+                    $checkE6 = null;
+
+                    $checkF = null;
+                    $checkF1 = null;
+                    $checkF2 = null;
+                    $checkF3 = null;
+                    $checkF4 = null;
+
+                    // Check the appropriate language.
+                    if ((isset($_POST['language']))) {
+                        switch ($_POST['language']) {
+                            case "telugu":
+                                $checkA1 = $checked;
+                                break;
+                            case "english":
+                                $checkA2 = $checked;
+                                break;
+                        }
                     }
 
-                    if ($language == "english" && $option === "contains") {
-                        $input = explode(" ", $input);
-                        $input = implode($input);
+                    // Check the appropriate search string length.
+                    if ((isset($_POST['search_string_length']))) {
+                        switch ($_POST['search_string_length']) {
+                            case "any":
+                                $checkB1 = $checked;
+                                break;
+                            case "exactly":
+                                $checkB2 = $checked;
+                                break;
+                            case "between":
+                                $checkB3 = $checked;
+                                break;
+                        }
                     }
 
-                    if ($language == "telugu" && $option == "contains-subs") {
-                        $input = explode(",", $input);
-                        $input = implode($input);
+                    // Check the option.
+                    if ((isset($_POST['option']))) {
+                        switch ($_POST['option']) {
+                            case "C1":
+                                $checkC1 = $checked;
+                                break;
+                            case "C2":
+                                $checkC2 = $checked;
+                                break;
+                            case "C3":
+                                $checkC3 = $checked;
+                                break;
+                            case "C4":
+                                $checkC4 = $checked;
+                                break;
+                            case "C5":
+                                $checkC5 = $checked;
+                                break;
+                            case "C6":
+                                $checkC6 = $checked;
+                                break;
+                            case "D1":
+                                $checkD1 = $checked;
+                                break;
+                            case "D2":
+                                $checkD2 = $checked;
+                                break;
+                            case "D3":
+                                $checkD3 = $checked;
+                                break;
+                            case "D4":
+                                $checkD4 = $checked;
+                                break;
+                            case "D5":
+                                $checkD5 = $checked;
+                                break;
+                            case "D6":
+                                $checkD6 = $checked;
+                                break;
+                            case "E1":
+                                $checkE1 = $checked;
+                                break;
+                            case "E2":
+                                $checkE2 = $checked;
+                                break;
+                            case "E3":
+                                $checkE3 = $checked;
+                                break;
+                            case "E4":
+                                $checkE4 = $checked;
+                                break;
+                            case "E5":
+                                $checkE5 = $checked;
+                                break;
+                            case "E6":
+                                $checkE6 = $checked;
+                                break;
+                            case "F1":
+                                $checkF1 = $checked;
+                                break;
+                            case "F2":
+                                $checkF2 = $checked;
+                                break;
+                            case "F3":
+                                $checkF3 = $checked;
+                                break;
+                            case "F4":
+                                $checkF4 = $checked;
+                                break;
+                        }
                     }
 
-                    if ($language == "telugu" && $option == "contains") {
-                        $input = explode(" ", $input);
-                        $input = implode($input);
+                    // Check the appropriate category
+                    if ((isset($_POST['category']))) {
+                        switch ($_POST['category']) {
+                            case "C":
+                                $checkC = $checked;
+                                break;
+                            case "D":
+                                $checkD = $checked;
+                                break;
+                            case "E":
+                                $checkE = $checked;
+                                break;
+                            case "F":
+                                $checkF = $checked;
+                                break;
+                        }
                     }
 
-                    // Connect to DB
-                    DEFINE('DATABASE_HOST', 'localhost');
-                    DEFINE('DATABASE_DATABASE', 'crawler');
-                    DEFINE('DATABASE_USER', 'root');
-                    DEFINE('DATABASE_PASSWORD', '');
-                    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
-                    $dbcn->set_charset("utf8");
-                    if (mysqli_connect_errno()) {
-                        echo "<p>Error creating database connection</p>";
-                        exit;
-                    }
+                    ?>
 
-                    // Get all English and Telugu words within the specified word length range.
-                    $sql = "SELECT E.en_id, E.word, E.char_len FROM english AS E WHERE E.char_len >= $min_letter AND E.char_len <= $max_letter UNION SELECT T.tel_id, T.word, T.char_len FROM telugu AS T WHERE T.char_len >= $min_letter AND T.char_len <= $max_letter";
-                    $result = $dbcn->query($sql);
-                    if (!$result) {
-                        echo ("<p>Unable to query database at this time.</p>");
-                        exit;
-                    }
+                    <!-- [A] -->
+                    <label>[A] Language</label><br>
+                    <input type="radio" style="margin-left:25px;" name="language" value="telugu" id="rad-1" checked <?php echo $checkA1; ?>> 1. Telugu<br>
+                    <input type="radio" style="margin-left:25px;" name="language" value="english" id="rad-2" <?php echo $checkA2 ?>> 2. English<br><br>
 
-                    // How many rows were retrieved.
-                    $numRows = $result->num_rows;
+                    <!-- [B] -->
+                    <label>[B] Length</label><br>
+                    <input type="radio" style="margin-left:25px;" name="search_string_length" value="any" id="rad-1" checked <?php echo $checkB1; ?>> 1. Any<br>
+                    <input type="radio" style="margin-left:25px;" name="search_string_length" value="exactly" id="rad-2" <?php echo $checkB2; ?>> 2. Exactly [<input type="number" name="exact_length" value=<?php echo $length_equals ?> class="numericInput">] characters<br>
+                    <input type="radio" style="margin-left:25px;" name="search_string_length" value="between" id="rad-3" <?php echo $checkB3; ?>> 3. Between [<input type="number" name="between_length_a" value=<?php echo $length_between_from ?> class="numericInput">] and [<input type="number" name="between_length_b" value=<?php echo $length_between_to ?> class="numericInput">] characters<br>
 
-                    // If any were found...
-                    if ($numRows > 0) {
-                        $index = $numRows;
-                        $no_result_found = 0;
-                        $limit_conat = 0;
-                        $limit_con = 0;
-                        $limit_pre = 0;
-                        $limit_suf = 0;
-                        $limit_whole = 0;
-                        $count = 0;
+                    <!-- Header 2 -->
+                    <p class="searchHeader" style="padding-top:10px;">Options</p>
 
-                        // Loop over each row.
-                        for ($i = 0; $i < $index; $i++) {
+                    <!-- [C] -->
+                    <label>[C] Search by Fuzzy String</label><br>
+                    <input type="radio" style="margin-left:25px;" name="option" value="C1" id="rad-1" checked <?php echo $checkC1 ?>> 1. Contains substring<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="C2" id="rad-2" <?php echo $checkC2 ?>> 2. Contains substrings (any order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="C3" id="rad-3" <?php echo $checkC3 ?>> 3. Contains substrings (given order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="C4" id="rad-4" <?php echo $checkC4 ?>> 4. Full Word<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="C5" id="rad-5" <?php echo $checkC5 ?>> 5. Prefix<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="C6" id="rad-6" <?php echo $checkC6 ?>> 6. Suffix<br /><br>
 
-                            // Collect substrings from the word to be compared
-                            // against the user's search criteria.
-                            // $row[1] is the word.
-                            $row = $result->fetch_array();
-                            $current_word = $row[1];
-                            $current_word_length = strlen($row[1]);
-                            $contain_at_index = $contain_value - 1;
+                    <!-- [D] -->
+                    <label>[D] Search by Exact String</label><br>                    
+                    <input type="radio" style="margin-left:25px;" name="option" value="D1" id="rad-7" <?php echo $checkD1 ?>> 1. Contains substring<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="D2" id="rad-8" <?php echo $checkD2 ?>> 2. Contains substrings (any order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="D3" id="rad-9" <?php echo $checkD3 ?>> 3. Contains substrings (given order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="D4" id="rad-10" <?php echo $checkD4 ?>> 4. Full Word<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="D5" id="rad-11" <?php echo $checkD5 ?>> 5. Prefix<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="D6" id="rad-12" <?php echo $checkD6 ?>> 6. Suffix<br /><br>
 
-                            // Other metadata
-                            $prefix_string = substr($current_word, 0, strlen($input));
-                            $suffix_string = substr($current_word, ($current_word_length - strlen($input)));
+                    <!-- [E] -->
+                    <label>[E] Search by Logical Character</label><br>                             
+                    <input type="radio" style="margin-left:25px;" name="option" value="E1" id="rad-13" <?php echo $checkE1 ?>> 1. Contains character<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="E2" id="rad-14" <?php echo $checkE2 ?>> 2. Contains characters (any order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="E3" id="rad-15" <?php echo $checkE3 ?>> 3. Contains characters (given order)<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="E4" id="rad-16" <?php echo $checkE4 ?>> 4. Character at position [<input type="number" name="contain_at_index" value=<?php echo $contain_at_index; ?> class="numericInput">]<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="E5" id="rad-17" <?php echo $checkE5 ?>> 5. Prefix<br />
+                    <input type="radio" style="margin-left:25px;" name="option" value="E6" id="rad-18" <?php echo $checkE6 ?>> 6. Suffix<br /><br>
 
-                            // If the contain at index is within the length of the word...
-                            if ($current_word_length > $contain_at_index) {
-                                // ... $contain_at will contain the character at that index.
-                                $contain_at = substr($current_word, $contain_at_index);
-                            }
+                    <!-- [F] -->
+                    <label>[F] Special Searches</label><br>                             
+                    <input type="radio" style="margin-left:25px;" name="option" value="F1" id="rad-19" <?php echo $checkF1 ?>> 1. Consonants (given order)<br>
+                    <input type="radio" style="margin-left:25px;" name="option" value="F2" id="rad-20" <?php echo $checkF2 ?>> 2. Consonants in (any order)<br>
+                    <input type="radio" style="margin-left:25px;" name="option" value="F3" id="rad-21" <?php echo $checkF3 ?>> 3. Vowels (given order)<br>
+                    <input type="radio" style="margin-left:25px;" name="option" value="F4" id="rad-22" <?php echo $checkF4 ?>> 4. Vowels (any order)<br><br>
 
-                            // If the Telugu language is selected...
-                            if ($language === "telugu") {
+                </div>
 
-                                // Parse the word (from the DB) into logical characters.
-                                $word_from_db = parseToLogicalCharacters($row[1]);
+                <!-- NOTE: search bar and submit button are inside the RESULTS div -->
+            </form>
 
-                                // Parse the user's input (search criteria) into logical characters.
-                                $user_search_string = parseToLogicalCharacters($input);
+            <!-- RESULTS -->
+            <div class="col-lg-10 col-sm-9 col-xs-10" style="margin-top: 30px">
 
-                                // Handle encounters with unknown characters.
-                                if (count($word_from_db) > $contain_at_index) {
-                                    $contain_at = $word_from_db[$contain_at_index];
-                                }
+                <!-- Search bar -->
+                <div class="container-fluid">
+                    <div class="col-xs-3"></div>
+                    <div class="row col-xs-6" style="align-content:center; margin: 0 auto;">
+                        <!-- SEARCH Bar -->
+                        <div class="col-sm-10 col-md-11" style="padding-right: 0px;">
+                            <input type="text" form="searchForm" id="search-bar" name="search-bar" placeholder="Enter Search Criteria" <?php if (isset($_POST['search-bar'])) {
+                                                                                                                                            echo "value='" . $_POST['search-bar'] . "'";
+                                                                                                                                        } ?>>
+                        </div>
+                        <!-- SUBMIT Button -->
+                        <div class="col-sm-2 col-md-1" style="padding-left:2px; max-width:70px">
+                            <button type="submit" form="searchForm" id="search-button" value="search" name="search">
+                                <img src="images/search.png" alt="Search Icon" height="42" width="42">
+                            </button>
+                        </div>
+                    </div>
 
-                                // =========================================================================
-                            }
+                    <!-- Spacer -->
+                    <div style="height:75px"></div>
 
-                            if ($input === "") {
-                                $no_result_found = 0;
-                            } else if ($language == "english" && strcasecmp($contain_at, $input) == 0 && $option === "contains-at" && $limit_con < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_con++;
-                                // put in a check in line 218 to make sure the index were searching is less than the total number of characters in the word
-                            } else if (
-                                $language == "telugu" && $option === "contains-at" &&
-                                $limit_con < $result_limit &&
-                                isset($word_from_db[0]) &&
-                                count($word_from_db) > $contain_at_index &&
-                                $word_from_db[$contain_at_index] == $user_search_string[0]
-                            ) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_con++;
-                            } else if ($language == "english" && strcasecmp($prefix_string, $input) == 0 && $option === "prefix" && $limit_pre < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_pre++;
-                            } else if ($language == "telugu" && $option === "prefix" && $limit_pre < $result_limit) {
-                                // For each prefix character...
-                                $match = true;
-                                if (isset($word_from_db[0])) {
-                                    for ($i = 0; $i < count($user_search_string); $i++) {
-                                        //... compare against characters in the word from the DB.
-                                        if ($word_from_db[$i] != $user_search_string[$i]) {
-                                            // No match. break.
-                                            $match = false;
+                    <!-- Bring in jquery table support -->
+                    <?php require "data_table_support.php"; ?>
 
-                                            // Increment outer loop
-                                            $i++;
+                    <!-- Results Table -->
+                    <div id="wrap">
+                        <div class="container-fluid">
 
-                                            break;
+                            <table id="myDataTable" cellpadding="0" cellspacing="0" class="display table table-striped table-bordered" width="100%">
+                                <thead>
+                                    <tr>
+                                        <!-- Setting up columns -->
+                                        <?php
+                                        if (isset($col1)) {
+                                            echo "<th>$col1</th>";
                                         }
-                                    }
-                                } else {
-                                    $match = false;
-                                }
-
-                                // If successful...
-                                if ($match == true) {
-                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                    $no_result_found++;
-                                    $limit_pre++;
-                                }
-                            } else if ($language == "english" && strcasecmp($suffix_string, $input) == 0 && $option === "suffix" && $limit_suf < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_suf++;
-                            } else if ($language == "telugu" && strcasecmp($suffix_string, $input) == 0 && $option === "suffix" && $limit_suf < $result_limit) {
-                                // For each suffix character...
-                                $match = true;
-                                $search_string_length = count($user_search_string) - 1;
-                                $word_from_db_length = count($word_from_db) - 1;
-                                if (isset($word_from_db[0])) {
-                                    for ($i = 0; $i < count($user_search_string); $i++) {
-                                        //... compare against characters in the word from the DB.
-                                        if ($word_from_db[$word_from_db_length - $i] != $user_search_string[$search_string_length - $i]) {
-                                            // No match. break.
-                                            $match = false;
-
-                                            // Increment outer loop
-                                            $i++;
-
-                                            break;
+                                        if (isset($col2)) {
+                                            echo "<th>$col2</th>";
                                         }
-                                    }
-                                } else {
-                                    $match = false;
-                                }
-
-                                // If successful...
-                                if ($match == true) {
-                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                    $no_result_found++;
-                                    $limit_suf++;
-                                }
-                            } else if ($language == "english" && strcasecmp($row[1], $input) == 0 && strcasecmp($option, "whole") == 0 && $limit_whole < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_whole++;
-                            } else if ($language == "telugu" && strcasecmp($option, "whole") == 0 && $limit_whole < $result_limit) {
-                                $match = true;
-                                if (isset($word_from_db[$i]) && count($user_search_string) == count($word_from_db)) {
-                                    for ($i = 0; $i < count($user_search_string); $i++) {
-                                        //... compare against characters in the word from the DB.
-                                        if ($word_from_db[$i] != $user_search_string[$i]) {
-                                            // No match. break.                                            
-                                            $match = false;
-
-                                            // Increment outer loop
-                                            $i++;
-
-                                            break;
+                                        if (isset($col3)) {
+                                            echo "<th>$col3</th>";
                                         }
+                                        if (isset($col4)) {
+                                            echo "<th>$col4</th>";
+                                        }
+                                        if (isset($col5)) {
+                                            echo "<th>$col5</th>";
+                                        }
+                                        ?>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+
+                                    <!-- Processing User Request -->
+                                    <?php
+
+                                    // Connect to DB
+                                    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+                                    $dbcn->set_charset("utf8");
+                                    if (mysqli_connect_errno()) {
+                                        echo "<p>Error creating database connection.</p>";
+                                        exit;
                                     }
-                                } else {
-                                    $match = false;
-                                }
 
-                                // If successful...
-                                if ($match == true) {
-                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                    $no_result_found++;
-                                    $limit_whole++;
-                                }
-                            } else if ($language == "english" && preg_match("/$input/i", $row[1]) && $option === "contains-sub" && $limit_conat < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_conat++;
-                            } else if ($language == "telugu" && preg_match("/$input/i", $row[1]) && $option === "contains-sub" && $limit_conat < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_conat++;
-                            } else if ($language == "english" && preg_match("/$input/i", $row[1]) && $option === "contains-subs" && $limit_conat < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_conat++;
-                            } else if ($language == "telugu" && preg_match("/$input/i", $row[1]) && $option === "contains-subs" && $limit_conat < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_conat++;
-                            } else if ($language == "english" && preg_match("/$input/i", $row[1]) && $option === "contains" && $limit_con < $result_limit) {
-                                echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                $no_result_found++;
-                                $limit_con++;
-                            } else if ($language == "telugu" && $option === "contains" && $limit_conat < $result_limit) {
-                                $match = true;
-                                if (isset($word_from_db[0])) {
-                                    for ($i = 0; $i < count($user_search_string); $i++) {
+                                    // Default min and max to 'any'.
+                                    $min_letter = 0;
+                                    $max_letter = 1000;
 
-                                        // If the character exists in the word...
-                                        $x = false;
-                                        for ($j = 0; $j < count($word_from_db); $j++) {
-                                            if ($user_search_string[$i] == "," || $user_search_string[$i] == $word_from_db[$j]) {
-                                                $x = true;
+                                    // Change min and max if the user has specified a length (grouping B)
+                                    if ((isset($_POST['search_string_length']))) {
+                                        switch ($_POST['search_string_length']) {
+                                                // [B2]
+                                            case "exactly":
+                                                if (isset($_POST['exact_length'])) {
+                                                    $min_letter = $length_equals;
+                                                    $max_letter = $length_equals;
+                                                }
                                                 break;
+                                                // [B3]
+                                            case "between":
+                                                if (isset($_POST['between_length_a'])) {
+                                                    $min_letter = $length_between_from;
+                                                }
+                                                if (isset($_POST['between_length_b'])) {
+                                                    $max_letter = $length_between_to;
+                                                }
+                                                break;
+                                        }
+                                    }
+
+                                    // Generate SQL
+                                    $sql = "";
+                                    if ($language == "english") {
+                                        $sql = "SELECT * FROM english AS E WHERE E.char_len >= $min_letter AND E.char_len <= $max_letter";
+                                    } else {
+                                        $sql = "SELECT * FROM telugu AS T WHERE T.char_len >= $min_letter AND T.char_len <= $max_letter";
+                                    }
+
+                                    // Run query, retrieving unfiltered set of words.
+                                    $result = $dbcn->query($sql);
+                                    if (!$result) {
+                                        echo ("<p>Unable to query database at this time.</p>");
+                                        exit;
+                                    }
+
+                                    // How many rows were retrieved?
+                                    $numRows = $result->num_rows;
+
+                                    // If any were found...
+                                    if ($user_search_string != "" && $numRows > 0) {
+                                        // Loop over each row.
+                                        for ($i = 0; $i < $numRows; $i++) {
+                                            $row = $result->fetch_array();
+
+                                            // Determine what category of search is being requested. 
+                                            // Possible results -> "C", "D", "E", or "F"
+                                            $category = substr($_POST['option'], 0, 1);
+
+                                            // For some categories, the two languages can use the same
+                                            // filter functions. For others, they must be different.
+                                            switch ($category) {
+                                                case "C":
+                                                    // Same
+                                                    break;
+                                                case "D":
+                                                    // Different
+                                                    break;
+                                                    // Search by Logical Character
+                                                case "E":
+                                                    switch ($language) {
+                                                        case "telugu":
+                                                            teluguLogicalCharacterSearch($row, $user_search_string, $_POST['option']);
+                                                            break;
+                                                        case "english":
+                                                            englishSearch($row, $user_search_string, $_POST['option']);
+                                                            break;
+                                                        default:
+                                                            echo "Invalid language :{";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "F":
+                                                    // Different
+                                                    break;
                                             }
                                         }
-
-                                        // The character the user entered was not found in the word.
-                                        if ($x == false) {
-                                            $match = false;
-                                            break;
-                                        }
                                     }
-                                } else {
-                                    $match = false;
-                                }
 
-                                // If successful...
-                                if ($match == true) {
-                                    echo "<tr><td colspan='2'>$row[1]</td></tr>";
-                                    $no_result_found++;
-                                    $limit_con++;
-                                }
-                            }
-                        }
-
-
-                        if ($no_result_found === 0) {
-                            echo "<tr><td colspan='2'>$message</td></tr>";
-                        }
-                    }
-                    ?>
-                </table>
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div id="foot">
-            <?php require "footer.php"; ?>
-        </div>
-
     </div>
+
 </body>
 
 </html>
+
+<!-- PHP functions -->
+<?php
+
+// Prints a row in the results table.
+function printRow($row)
+{
+    $id = $row[0];
+    $word = $row['word'];
+    $length = $row['char_len'];
+    $strength = $row['strength'];
+    $weight = $row['weight'];
+
+    print "
+        <tr>
+            <td >$id</td>
+            <td >$word</td>
+            <td >$length</td>
+            <td >$strength</td>
+            <td >$weight</td>
+        </tr>";
+}
+
+// Handles Logical Characters Search [E] for Telugu language.
+function teluguLogicalCharacterSearch($row, $user_search_string, $option)
+{
+    // Telugu words must be parsed into logical characters
+    // before this search can be run.
+    $word = parseToLogicalCharacters($row['word']);
+    $user_search_string = parseToLogicalCharacters($user_search_string);
+
+    switch ($option) {
+            // Contains character
+        case "E1":
+            for ($i = 0; $i < count($word); $i++) {
+                // If any character in the $word matches $user_search_string[0]...
+                if ($word[$i] == $user_search_string[0]) {
+                    //... the word is a match.
+                    printRow($row);
+                    return;
+                }
+            }
+            break;
+            // Contains characters in any order
+        case "E2":
+            $matchFound = true;
+            // For each character in the $user_search_string...
+            for ($i = 0; $i < count($user_search_string); $i++) {
+
+                // ... check every character in the $word, searching for matches
+                for ($j = 0; $j < count($word); $j++) {
+                    if ($user_search_string[$i] == $word[$j]) {
+                        // Match found. Continue...
+                        $matchFound = true;
+                        break;
+                    }
+                    $matchFound = false;
+                }
+
+                // If the character in $user_search_string at index $i was not found in the $word,
+                // the criteria has not been met. Bail!
+                if ($matchFound == false) {
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Contains characters in the given order
+        case "E3":
+            $matchFound = true;
+            $previousIndex = 0;
+            // For each character in the $user_search_string...
+            for ($i = 0; $i < count($user_search_string); $i++) {
+
+                // ... check every character in the $word, searching for matches
+                for ($j = $previousIndex; $j < count($word); $j++) {
+                    if ($user_search_string[$i] == $word[$j]) {
+                        // Match found. Continue...   
+                        $previousIndex = $j;
+                        $matchFound = true;
+                        break;
+                    }
+                    $matchFound = false;
+                }
+
+                // If the character in $user_search_string at index $i was not found in the $word,
+                // the criteria has not been met. Bail!
+                if ($matchFound == false) {
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Contains character at given index (uses $contain_at_index)
+        case "E4":
+            // Get global variable $contain_at_index (direct from user input).
+            global $contain_at_index;
+
+            // Invalid input -> No results
+            if ($contain_at_index < 1) return;
+
+            // If the current word does not have a value for the given index, bail.
+            if (count($word) <= $contain_at_index) return;
+
+            // If the criteria is met...
+            if ($word[$contain_at_index - 1] == $user_search_string[0]) {
+                //... print.
+                printRow($row);
+            }
+            break;
+            // Prefix
+        case "E5":
+            // For each prefix character...
+            for ($i = 0; $i < count($user_search_string); $i++) {
+                //... compare against characters in the word from the DB.
+                if ($word[$i] != $user_search_string[$i]) {
+                    // No match. break.
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Suffix
+        case "E6":
+            for ($i = 1; $i <= count($user_search_string); $i++) {
+                //... compare against characters in the word from the DB.
+                if ($word[count($word) - $i] != $user_search_string[count($user_search_string) - $i]) {
+                    // No match. break.
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+    };
+}
+
+// Handles searches in English
+function englishSearch($row, $user_search_string, $option)
+{
+    // Get the word.
+    $word = $row['word'];
+
+    // Different cases.
+    switch ($option) {
+            // Contains character
+        case "E1":
+            for ($i = 0; $i < strlen($word); $i++) {
+                // If any character in the $word matches $user_search_string[0]...
+                if ($word[$i] == $user_search_string[0]) {
+                    //... the word is a match.
+                    printRow($row);
+                    return;
+                }
+            }
+            break;
+            // Contains characters (any order)
+        case "E2":
+            $matchFound = true;
+            // For each character in the $user_search_string...
+            for ($i = 0; $i < strlen($user_search_string); $i++) {
+
+                // ... check every character in the $word, searching for matches
+                for ($j = 0; $j < strlen($word); $j++) {
+                    if ($user_search_string[$i] == $word[$j]) {
+                        // Match found. Continue...
+                        $matchFound = true;
+                        break;
+                    }
+                    $matchFound = false;
+                }
+
+                // If the character in $user_search_string at index $i was not found in the $word,
+                // the criteria has not been met. Bail!
+                if ($matchFound == false) {
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Contains characters in the given order
+        case "E3":
+            $matchFound = true;
+            $previousIndex = 0;
+            // For each character in the $user_search_string...
+            for ($i = 0; $i < strlen($user_search_string); $i++) {
+
+                // ... check every character in the $word, searching for matches
+                for ($j = $previousIndex; $j < strlen($word); $j++) {
+                    if ($user_search_string[$i] == $word[$j]) {
+                        // Match found. Continue...   
+                        $previousIndex = $j;
+                        $matchFound = true;
+                        break;
+                    }
+                    $matchFound = false;
+                }
+
+                // If the character in $user_search_string at index $i was not found in the $word,
+                // the criteria has not been met. Bail!
+                if ($matchFound == false) {
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Contains character at given index (uses $contain_at_index)
+        case "E4":
+            // Get global variable $contain_at_index (direct from user input).
+            global $contain_at_index;
+
+            // Invalid input -> No results
+            if ($contain_at_index < 1) return;
+
+            // If the current word does not have a value for the given index, bail.
+            if (strlen($word) <= $contain_at_index) return;
+
+            // If the criteria is met...
+            if ($word[$contain_at_index - 1] == $user_search_string[0]) {
+                //... print.
+                printRow($row);
+            }
+            break;
+            // Prefix
+        case "E5":
+            // If the search string is longer than the word, it can't be a match.
+            if (strlen($word) < strlen($user_search_string)) return;
+
+            // For each prefix character...
+            for ($i = 0; $i < strlen($user_search_string); $i++) {
+                //... compare against characters in the word from the DB.
+                if ($word[$i] != $user_search_string[$i]) {
+                    // No match. break.
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+            // Suffix
+        case "E6":
+            // If the search string is longer than the word, it can't be a match.
+            if (strlen($word) < strlen($user_search_string)) return;
+
+            // For each suffix character...
+            for ($i = 1; $i <= strlen($user_search_string); $i++) {
+                //... compare against characters in the word from the DB.
+                if ($word[strlen($word) - $i] != $user_search_string[strlen($user_search_string) - $i]) {
+                    // No match. break.
+                    return;
+                }
+            }
+            // If we make it this far, then it is a match.
+            printRow($row);
+            break;
+    }
+}
+
+?>

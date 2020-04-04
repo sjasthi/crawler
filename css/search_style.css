@@ -1,18 +1,35 @@
 body{
-    overflow-x: hidden;
+    overflow-x: hidden;    
 }
-#filter {
-    display: inline-block;
+.filter {    
     position: relative;
-    width: 240px;
-    height: 500px;
-    padding: 15px;
+    padding-left: 15px;
     left: 5px;
-    background-color: rgba(0, 0, 0, 0.8);
+    width: 350px;
+    height: 100%;
+    float: left;
+    background-color: rgba(0, 0, 0, 0.84); 
+    color: white;   
+}
+
+/* #search-bar-pane{
+    margin: 0 auto;
+    width: 60%;
+    height: 60px;
+} */
+.searchResultsArea{
+    background-color: aqua;    
 }
 #searchForm{
     margin-top: -12px;
-    color: #FFFFFF;
+    color: #FFFFFF;    
+}
+.searchHeader{
+    font-size: larger;
+    color: orange;
+}
+.myRadio{
+    margin-left: 24px;
 }
 #body{
     margin-left: -5px;
@@ -21,16 +38,17 @@ body{
     margin-top: -18px;
 }
 #search-bar {
-    display: block;
-    width: 80%;
-    height: 40px;
-    padding: 5px;
+    width: 100%;
+    float:right;
+    height: 54px;
     font-size: 14pt;
-    margin-left: auto;
-    margin-right: auto;
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* padding-top: 20px; */
     border: 2px solid orange;
     border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 10px;    
+    padding-left:10px;
 }
 #display{
     width: 60%;
@@ -40,23 +58,19 @@ body{
     border: 1px solid orange;
     left: 360px;
     top: -420px;
+    background-color: yellow;
 }
 #search-button{
-    display: block;
-    position: relative;
     border: 2px solid orange;
     background-color: #FFFFFF;
-    margin-left: auto;
-    top: -54px;
-    left: -12px;
+    /* margin-left: auto;     */
+    /* left: -12px; */
     height: 54px;
-}
-#search-bar-pane{
-    position: relative;
-    left: 330px;
-    top: -460px;
-    width: 60%;
-    height: 60px;
+    width: 64px;
+    margin-left: 0px;
+    margin-right:0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 #result-table{
     width: 100%;
@@ -71,7 +85,14 @@ body{
     font-weight: bold;
     color: orange;
 }
-#letter_spiner1{
-    margin-left: 7px;
-    margin-bottom: 5px;
+.numericInput{        
+    border: none;
+    background: transparent;
+    width: 25px;
+    text-align: center;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
