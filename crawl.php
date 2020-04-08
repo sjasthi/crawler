@@ -50,7 +50,7 @@ if(isset ($_POST['crawlInput'])) {
         if (checkURLExists($input, $crawlURL) == true) {  //if the url exists, it will not crawl.
             $messagePrompt = "Duplicate Found! Not added to database.";
         } else {
-            // $messagePrompt = "CRAWLING.  Please wait, prompt will appear when finished.";  //currently broken, doesn't proc before crawl
+            echo "CRAWLING.  Please wait, prompt will appear when finished.";
             crawl($input, $language, $sunset, $depth);
             echo "<script type='text/javascript'>alert('Crawl is finished!!')</script>";
         }

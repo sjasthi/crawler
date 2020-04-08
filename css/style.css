@@ -6,14 +6,14 @@ body, h1, h3 {
     font-family: Arial, Helvetica, sans-serif;
     color: #4c4c4c;
 }
-
+/* 
 .headerTable, .headerTable a:link {
    <!-- background-color: #FF9900; -->
     color: #C0BAB6;
     font-family: sans-serif;
     font-size: small;
-    text-decoration: none;
-}
+    text-decoration: none;    
+} */
 #menu-table, #menu-table a:link {
     background-color: #232323;
     color: #C0BAB6;
@@ -56,12 +56,12 @@ body, h1, h3 {
     color: #C0BAB6;
 }
 
-#indexDiv {
+/* #indexDiv {
 
 }
 #searchForm {
 
-}
+} */
 #searchInput {
     width: 400px;
 }
@@ -71,12 +71,12 @@ body, h1, h3 {
     height: 50px;
 }
 
-#searchSubmitButton {
+/* #searchSubmitButton {
 
 }
 #indexDBSummary {
 
-}
+} */
 #loginButton{
     width: 173px;
 }
