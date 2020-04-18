@@ -1,7 +1,7 @@
 <?php
 
+// DB Support
 require ('db_fns.php');
-
 
 function checkWordExistsE($queriedResult){
     $conn = db_connect();

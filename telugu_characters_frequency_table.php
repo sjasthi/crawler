@@ -1,10 +1,8 @@
 <?php
 require "header.php";
 
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
+// Bring in DB support.
+require "db_fns.php";
 
 $option = $_GET['t'];
 //$col1 = "Serial No."; TODO
@@ -25,7 +23,7 @@ if ($option == "frequency") {
 function calculateFrequencies()
 {
     // Query the telegu table and bring back every word.
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     $query = "SELECT * FROM telugu";
     $result = $conn->query($query);
 
@@ -66,13 +64,13 @@ function calculateFrequencies()
                     $queryResult = $conn->query($query);
 
                     // Indicate failure if failure exists...
-                    if (!$queryResult){
+                    if (!$queryResult) {
                         //echo "Searching telegucount DB failed :[";
                         continue;
                     }
 
                     // If the character is already in the table...                                    
-                    if ($queryResult->num_rows > 0){
+                    if ($queryResult->num_rows > 0) {
                         $row = $queryResult->fetch_array();
                         $count = $row['ch_count'] + 1;
 
@@ -80,10 +78,10 @@ function calculateFrequencies()
                         $conn->query($updateQuery);
                     }
                     // If the character is not already in the <table class=""></table>                    
-                    else{
+                    else {
                         $insertQuery = "INSERT INTO telugucount (ch, ch_count) VALUES ('" . $character . "', '1')";
                         $conn->query($insertQuery);
-                    }                  
+                    }
                 }
 
                 // Increment 'counted'
@@ -99,13 +97,11 @@ function calculateFrequencies()
     // Inform the user on what has happened.
     global $message;
     $message = "Frequency calculation operation complete. ";
-    if ($newlyParsedWordCount == 0){
+    if ($newlyParsedWordCount == 0) {
         $message .= "No new words were parsed.";
-    }
-    else if ($newlyParsedWordCount == 1){
+    } else if ($newlyParsedWordCount == 1) {
         $message .= "1 new word was parsed.";
-    }
-    else{
+    } else {
         $message .= "$newlyParsedWordCount new words were parsed.";
     }
 }
@@ -160,13 +156,13 @@ function calculateFrequencies()
 </head>
 
 <header>
-    <link href="css/parse_style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/parse_style.css" rel="stylesheet" type="text/css" />
 </header>
 
 <body class="body_background" style="line-height: 2.8">
-    <div id="wrap">    
+    <div id="wrap">
         <div class="container">
-        <span id="message"><?php echo $message ?></span>
+            <span id="message"><?php echo $message ?></span>
             <h3>Telegu Count</h3>
 
             <table id="info" cellpadding="0" cellspacing="0" class="display table table-striped table-bordered" width="100%">
@@ -197,7 +193,7 @@ function calculateFrequencies()
 
                     <?php
 
-                    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+                    $dbcn = db_connect();
 
                     $dbcn->set_charset("utf8");
                     if (mysqli_connect_errno()) {

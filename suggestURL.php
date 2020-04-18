@@ -1,8 +1,6 @@
 <?php
-//ini_set("display_errors","On");
-//error_reporting(E_ALL);
 require "header.php";
-include('suggest_fns.php');
+include ('suggest_fns.php');
 $messagePrompt = "";
 
 if(isset ($_POST["suggestInput"])) {
@@ -13,19 +11,6 @@ if(isset ($_POST["suggestInput"])) {
     if (empty($_POST["suggestInput"])) {
         $messagePrompt = "Please try again";
     }
-
-    /*if(isset ($_POST['langRadio'])){
-        $language = $_POST['langRadio'];
-
-        if($language == "english") {
-            $suggestURL = "suggesturl";
-            $crawlURL = "crawlurl";
-        }
-        else if($language == "telugu") {
-            $suggestURL = "suggesturl";
-            $crawlURL = "crawlurl";
-        }
-    }*/
 
     foreach ($suggestInput as $input) {
         if (checkURLAgainstSuggested($input, $suggestURL) == true) {

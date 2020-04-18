@@ -4,11 +4,8 @@ require "data_table_support.php";
 
 // ============== Variables ==============
 
-// DB config.
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
+// Bring in DB support.
+require "db_fns.php";
 
 // Column headers.
 $col1 = "ID";
@@ -38,7 +35,7 @@ $identity_column_name = "tel_id";
 if (isset($action) && $action == "delete" && isset($target_id)) {
 
     // Connect to DB.
-    $connect = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $connect = db_connect();
     $connect->set_charset("utf8");
     if (mysqli_connect_errno()) {
         echo "<p>Error creating database connection: </p>";
@@ -106,7 +103,7 @@ if (isset($action) && $action == "delete" && isset($target_id)) {
                     <?php
 
                     // Accessing DB...
-                    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+                    $dbcn = db_connect();
                     $dbcn->set_charset("utf8");
                     if (mysqli_connect_errno()) {
                         echo "<p>Error creating database connection: </p>";

@@ -20,10 +20,8 @@ $inserted_message = "";
 $existed_words = "";
 $existed_message = "";
 
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
+// Bring in DB support.
+require "db_fns.php";
 
 if(isset($_POST['parse'])){
     $lauguage = "english";
@@ -38,7 +36,7 @@ if(isset($_POST['parse'])){
     $text = preg_replace("/[\/\:\,\(\)\'\[\]\"\'\@\#\$\%\;\.0-9\<\>\-\*\;\-\_]/", " ", $text);
     $words = preg_split("/\s+/", $text, null, PREG_SPLIT_NO_EMPTY);
 
-    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $dbcn = db_connect();
     $dbcn -> set_charset("utf8");
     if(mysqli_connect_errno()){
         echo "<p>Error creating database connection</p>";

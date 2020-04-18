@@ -10,12 +10,6 @@ include('indic-wp-master/telugu_parser.php');
 
 // ============== Variables ==============
 
-// DB config.
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
-
 // Column headers.
 $col1 = "ID";
 $col2 = "Word";
@@ -389,12 +383,7 @@ if (isset($_POST['search'])) {
                                     <?php
 
                                     // Connect to DB
-                                    $dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
-                                    $dbcn->set_charset("utf8");
-                                    if (mysqli_connect_errno()) {
-                                        echo "<p>Error creating database connection.</p>";
-                                        exit;
-                                    }
+                                    $dbcn = db_connect();
 
                                     // Default min and max to 'any'.
                                     $min_letter = 0;
@@ -819,7 +808,7 @@ function teluguWordContainsSubstringPosition($word, $user_search_string)
                 // if each value in the search string is found...
                 if (isset($word[$i + $k]) && $word[$i + $k] == $user_search_string[$j][$k]) {
                     $match = true;
-                    if ($k == 0){
+                    if ($k == 0) {
                         $indexArray[$j] = $i;
                     }
                     if ($k == count($user_search_string[$j]) - 1) {

@@ -1,10 +1,8 @@
 <?php
 require "header.php";
 
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
+// Bring in DB support.
+require "db_fns.php";
 
 // Include the word processor file.
 include('indic-wp-master/word_processor.php');
@@ -32,7 +30,7 @@ if ($option === "english" || $option === "telugu") {
 }
 
 if ($action == "delete") {
-	$connect = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+	$connect = db_connect();
 	$connect->set_charset("utf8");
 	if (mysqli_connect_errno()) {
 		echo "<p>Error creating database connection: </p>";
@@ -49,7 +47,7 @@ if ($action == "delete") {
 // If the user selects action 'frequency'...
 if ($action == "frequency") {
 	// Do some work here...
-	echo "Howdy";	
+	echo "Howdy";
 }
 ?>
 <!DOCTYPE html>
@@ -139,7 +137,7 @@ if ($action == "frequency") {
 
 					<?php
 
-					$dbcn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+					$dbcn = db_connect();
 
 					$dbcn->set_charset("utf8");
 					if (mysqli_connect_errno()) {
