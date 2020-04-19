@@ -214,6 +214,22 @@ function englishSearch($row, $user_search_string, $option)
         case "D6":
             englishSuffix($word, $user_search_string, $row);
             break;
+            // Consonants (given order)
+        case "F1":
+            englishF1($word, $user_search_string, $row);
+            break;
+            // Consonants (any order)
+        case "F2":
+            englishF2($word, $user_search_string, $row);
+            break;
+            // Vowels (given order)
+        case "F3":
+            englishF3($word, $user_search_string, $row);
+            break;
+            // Vowels (any order)
+        case "F4":
+            englishF4($word, $user_search_string, $row);
+            break;
     }
 }
 
@@ -252,6 +268,292 @@ function sharedSearch($row, $user_search_string, $option)
 }
 
 // ======================================= Auxillary Functions =======================================
+
+// English search for consonants (any order)
+function englishF2($word, $user_search_string, $row)
+{
+    // Put the strings in lower case for easier processing.
+    $word = strtolower($word);
+    $user_search_string = strtolower($user_search_string);
+
+    // Create an array of base consonants from each word
+    // for comparison later.
+    $wordValues = [];
+    $searchValues = [];
+
+    // Process each character in the $word.
+    for ($i = 0; $i < strlen($word); $i++) {
+        // If the character is a base consonant...
+        if (isEnglishConsonant($word[$i]) && isEnglishBaseConsonant($word, $i)) {
+            // Push the letter to the stored array.
+            array_push($wordValues, $word[$i]);
+        }
+    }
+
+    // Process each character in the $user_search_string.
+    for ($i = 0; $i < strlen($user_search_string); $i++) {
+        // If the character is a base consonant...
+        if (isEnglishConsonant($user_search_string[$i]) && isEnglishBaseConsonant($user_search_string, $i)) {
+            // Push the letter to the stored array.
+            array_push($searchValues, $user_search_string[$i]);
+        }
+    }
+
+    // Count the entries in each list.
+    $searchCount = count($searchValues);
+    $wordCount = count($wordValues);
+
+    // If the two arrays are of different lengths, we know we don't have a match.
+    if ($searchCount != $wordCount) return;
+
+    // Remember visited indicies so they aren't reused.
+    $visitedIndicies = [];
+
+    // Go through every letter in the base consonants
+    // for the search string.
+    for ($i = 0; $i < $searchCount; $i++) {
+        $success = false;
+
+        // If this $searchValues value wasn't in the word, we don't have a match.
+        for ($j = 0; $j < $wordCount; $j++){
+            if ($searchValues[$i] == $wordValues[$j] && !in_array($j, $visitedIndicies)){
+                // Remember this index, so it isn't reused.
+                array_push($visitedIndicies, $j);
+
+                // Mark successful.
+                $success = true;
+
+                // Exit this loop.
+                break;
+            }
+        }
+
+        // Didn't find it :(
+        if ($success == false) return;
+    }
+
+    // If we make it this far, success!
+    printDecision($row);
+}
+
+// English search for consonants (given order)
+function englishF1($word, $user_search_string, $row)
+{
+    // Put the strings in lower case for easier processing.
+    $word = strtolower($word);
+    $user_search_string = strtolower($user_search_string);
+
+    // Create an array of base consonants from each word
+    // for comparison later.
+    $wordValues = [];
+    $searchValues = [];
+
+    // Process each character in the $word.
+    for ($i = 0; $i < strlen($word); $i++) {
+        // If the character is a base consonant...
+        if (isEnglishConsonant($word[$i]) && isEnglishBaseConsonant($word, $i)) {
+            // Push the letter to the stored array.
+            array_push($wordValues, $word[$i]);
+        }
+    }
+
+    // Process each character in the $user_search_string.
+    for ($i = 0; $i < strlen($user_search_string); $i++) {
+        // If the character is a base consonant...
+        if (isEnglishConsonant($user_search_string[$i]) && isEnglishBaseConsonant($user_search_string, $i)) {
+            // Push the letter to the stored array.
+            array_push($searchValues, $user_search_string[$i]);
+        }
+    }
+
+    // Count the entries in each list.
+    $searchCount = count($searchValues);
+    $wordCount = count($wordValues);
+
+    // If the two arrays are of different lengths, we know we don't have a match.
+    if ($searchCount != $wordCount) return;
+
+    // Go through every letter in the base consonants
+    // for the search string.
+    for ($i = 0; $i < $searchCount; $i++) {
+        // The values in the two arrays should match up perfectly.
+        if ($searchValues[$i] != $wordValues[$i]) return;
+    }
+
+    // If we make it this far, success!
+    printDecision($row);
+}
+
+// English search for vowels (given order)
+function englishF4($word, $user_search_string, $row)
+{
+    // Put the strings in lower case for easier processing.
+    $word = strtolower($word);
+    $user_search_string = strtolower($user_search_string);
+
+    // Create an array of base vowels from each word
+    // for comparison later.
+    $wordValues = [];
+    $searchValues = [];
+
+    // Process each character in the $word.
+    for ($i = 0; $i < strlen($word); $i++) {
+        // If the character is a base vowel...
+        if (isEnglishVowel($word[$i]) && isEnglishBaseVowel($word, $i)) {
+            // Push the letter to the stored array.
+            array_push($wordValues, $word[$i]);
+        }
+    }
+
+    // Process each character in the $user_search_string.
+    for ($i = 0; $i < strlen($user_search_string); $i++) {
+        // If the character is a base vowel...
+        if (isEnglishVowel($user_search_string[$i]) && isEnglishBaseVowel($user_search_string, $i)) {
+            // Push the letter to the stored array.
+            array_push($searchValues, $user_search_string[$i]);
+        }
+    }
+
+    // Count the entries in each list.
+    $searchCount = count($searchValues);
+    $wordCount = count($wordValues);
+
+    // If the two arrays are of different lengths, we know we don't have a match.
+    if ($searchCount != $wordCount) return;
+
+    // Go through every letter in the base vowels
+    // for the search string.
+    for ($i = 0; $i < $searchCount; $i++) {
+        // If this $searchValues value wasn't in the word, we don't have a match.
+        if (!in_array($searchValues[$i], $wordValues)) return;
+    }
+
+    // If we make it this far, success!
+    printDecision($row);
+}
+
+// English search for vowels (any order)
+function englishF3($word, $user_search_string, $row)
+{
+    // Put the strings in lower case for easier processing.
+    $word = strtolower($word);
+    $user_search_string = strtolower($user_search_string);
+
+    // Create an array of base vowels from each word
+    // for comparison later.
+    $wordValues = [];
+    $searchValues = [];
+
+    // Process each character in the $word.
+    for ($i = 0; $i < strlen($word); $i++) {
+        // If the character is a base vowel...
+        if (isEnglishVowel($word[$i]) && isEnglishBaseVowel($word, $i)) {
+            // Push the letter to the stored array.
+            array_push($wordValues, $word[$i]);
+        }
+    }
+
+    // Process each character in the $user_search_string.
+    for ($i = 0; $i < strlen($user_search_string); $i++) {
+        // If the character is a base vowel...
+        if (isEnglishVowel($user_search_string[$i]) && isEnglishBaseVowel($user_search_string, $i)) {
+            // Push the letter to the stored array.
+            array_push($searchValues, $user_search_string[$i]);
+        }
+    }
+
+    // Count the entries in each list.
+    $searchCount = count($searchValues);
+    $wordCount = count($wordValues);
+
+    // If the two arrays are of different lengths, we know we don't have a match.
+    if ($searchCount != $wordCount) return;
+
+    // Go through every letter in the base vowels
+    // for the search string.
+    for ($i = 0; $i < $searchCount; $i++) {
+        // The values in the two arrays should match up perfectly.
+        if ($searchValues[$i] != $wordValues[$i]) return;
+    }
+
+    // If we make it this far, success!
+    printDecision($row);
+}
+
+/*
+
+
+Input -> RUN
+
+Algorithm:
+
+Identify the BASE consonants in the input string (eg:
+R,N)
+
+Search for all the words containing R and N as the
+base/starting consonants (these consonants can appear
+in any order)
+
+
+*/
+
+// English only!
+// Function to check whether a  
+// character is consonant or not 
+function isEnglishConsonant($x)
+{
+    if (
+        $x == 'a' || $x == 'e' ||
+        $x == 'i' || $x == 'o' ||
+        $x == 'u'
+    )
+        return false;
+    else
+        return true;
+}
+
+// English only!
+// Function to check whether a  
+// character is a base consonant or not 
+function isEnglishBaseConsonant($word, $i)
+{
+    // If this letter is the first in the word...
+    if ($i == 0) return true;
+
+    // This letter is a base if there is no consonant before it.
+    if (isEnglishConsonant($word[$i - 1])) return false;
+
+    return true;
+}
+
+// English only!
+// Function to check whether a  
+// character is Vowel or not 
+function isEnglishVowel($x)
+{
+    if (
+        $x == 'a' || $x == 'e' ||
+        $x == 'i' || $x == 'o' ||
+        $x == 'u'
+    )
+        return true;
+    else
+        return false;
+}
+
+// English only!
+// Function to check whether a  
+// character is a base Vowel or not 
+function isEnglishBaseVowel($word, $i)
+{
+    // If this letter is the first in the word...
+    if ($i == 0) return true;
+
+    // This letter is a base if there is no Vowel before it.
+    if (isEnglishVowel($word[$i - 1])) return false;
+
+    return true;
+}
 
 // Reusable telugu substrings in given order
 function teluguFullWord($word, $user_search_string, $row)

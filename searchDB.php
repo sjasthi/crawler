@@ -486,8 +486,19 @@ if (isset($_POST['search'])) {
                                                             break;
                                                     }
                                                     break;
+                                                    // Special Searches
                                                 case "F":
-                                                    // Different
+                                                    switch ($language) {
+                                                        case "telugu":
+                                                            teluguSearch($row, $user_search_string, $_POST['option']);
+                                                            break;
+                                                        case "english":
+                                                            englishSearch($row, $user_search_string, $_POST['option']);
+                                                            break;
+                                                        default:
+                                                            echo "Invalid language :{";
+                                                            break;
+                                                    }
                                                     break;
                                             }
                                         }

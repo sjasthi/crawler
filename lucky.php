@@ -88,7 +88,7 @@ if (!$queryResult) {
                     teluguSearch($row, $user_search_string, $type);
                     break;
                 case "F":
-                    // Different
+                    teluguSearch($row, $user_search_string, $type);
                     break;
             }
         }
