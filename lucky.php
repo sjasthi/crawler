@@ -32,7 +32,7 @@ $category = substr($type, 0, 1);
 // If the $type input is invalid or missing...
 if ($category != "C" && $category != "D" && $category != "E" && $category != "F") {
     // ... insert default value.
-    $type = "C1";
+    $type = "F2";
 
     // Determine what category of search is being requested. 
     // Possible results -> "C", "D", "E", or "F"

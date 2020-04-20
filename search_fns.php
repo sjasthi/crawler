@@ -1,5 +1,4 @@
 <?php
-
 // Decides what format the results should be printed in based on what
 // screen is searching for those results.
 function printDecision($row)
@@ -155,6 +154,22 @@ function teluguSearch($row, $user_search_string, $option)
         case "D6":
             teluguSuffix($word, $user_search_string, $row);
             break;
+            // Consonants (given order)
+        case "F1":
+            teluguF1($word, $user_search_string, $row);
+            break;
+            // Consonants (any order)
+        case "F2":
+            teluguF2($word, $user_search_string, $row);
+            break;
+            // Vowels (given order)
+        case "F3":
+            teluguF3($word, $user_search_string, $row);
+            break;
+            // Vowels (any order)
+        case "F4":
+            teluguF4($word, $user_search_string, $row);
+            break;
     };
 }
 
@@ -172,11 +187,11 @@ function englishSearch($row, $user_search_string, $option)
             break;
             // Contains characters (any order)
         case "E2":
-            englishSubstringsAnyOrder($word, $user_search_string, $row);
+            genericSubstringsAnyOrder($word, $user_search_string, $row);
             break;
             // Contains characters in the given order
         case "E3":
-            englishSubstringsGivenOrder($word, $user_search_string, $row);
+            genericSubstringsGivenOrder($word, $user_search_string, $row);
             break;
             // Contains character at given index (uses $contain_at_index)
         case "E4":
@@ -196,11 +211,11 @@ function englishSearch($row, $user_search_string, $option)
             break;
             // Contains characters (any order)
         case "D2":
-            englishSubstringsAnyOrder($word, $user_search_string, $row);
+            genericSubstringsAnyOrder($word, $user_search_string, $row);
             break;
             // Contains characters in the given order
         case "D3":
-            englishSubstringsGivenOrder($word, $user_search_string, $row);
+            genericSubstringsGivenOrder($word, $user_search_string, $row);
             break;
             // Contains character at given index (uses $contain_at_index)
         case "D4":
@@ -247,11 +262,11 @@ function sharedSearch($row, $user_search_string, $option)
             englishSubstring($word, $user_search_string, $row);
             break;
         case "C2":
-            englishSubstringsAnyOrder($word, $user_search_string, $row);
+            genericSubstringsAnyOrder($word, $user_search_string, $row);
             break;
             // Contain substrings (given order)
         case "C3":
-            englishSubstringsGivenOrder($word, $user_search_string, $row);
+            genericSubstringsGivenOrder($word, $user_search_string, $row);
             break;
         case "C4":
             englishFullWord($word, $user_search_string, $row);
@@ -268,6 +283,206 @@ function sharedSearch($row, $user_search_string, $option)
 }
 
 // ======================================= Auxillary Functions =======================================
+
+// Telugu only!
+// Function to check whether a  
+// character is a base consonant or not 
+function isTeluguBaseConsonant($word, $i)
+{
+    // If this letter is the first in the word...
+    if ($i == 0) return true;
+
+    // This letter is a base if there is no consonant before it.
+    if (isConsonant(explode_telugu(json_encode($word[$i - 1]))[0])) return false;
+
+    return true;
+}
+
+// Telugu only!
+// Function to check whether a  
+// character is a base Vowel or not 
+function isTeluguBaseVowel($word, $i)
+{
+    // If this letter is the first in the word...
+    if ($i == 0) return true;
+
+    // This letter is a base if there is no Vowel before it.
+    if (isVowel(explode_telugu(json_encode($word[$i - 1]))[0])) return false;
+
+    return true;
+}
+
+// Telugu search for consonants (given order)
+function teluguF1($word, $user_search_string, $row)
+{
+    $wordConsonants = [];
+    $searchConsonants = [];
+
+    // Both strings come in as logical characters.
+    // Use telugu_parser.php to check for consonants in the word.    
+    for ($i = 0; $i < count($word); $i++) {
+        if (isConsonant(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseConsonant($word, $i)) {
+            array_push($wordConsonants, $word[$i]);
+        }
+    }
+
+    // Use telugu_parser.php to check for consonants in the search string.
+    for ($i = 0; $i < count($user_search_string); $i++) {
+        if (isConsonant(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseConsonant($user_search_string, $i)) {
+            array_push($searchConsonants, $user_search_string[$i]);
+        }
+    }
+    
+    // Reformat to meet the expectations of the "C" method.
+    $searchString = "";
+    for ($i = 0; $i < count($searchConsonants); $i++) {
+        $searchString .= $searchConsonants[$i];
+
+        if ($i != count($searchConsonants) - 1){
+            $searchString .= ",";
+        }
+    }
+    $word = "";
+    for ($i = 0; $i < count($wordConsonants); $i++) {
+        $word .= $wordConsonants[$i];
+
+        if ($i != count($wordConsonants) - 1){
+            $word .= ",";
+        }
+    }
+
+    // Search using fuzzy string.
+    genericSubstringsGivenOrder($word, $searchString, $row);
+}
+
+// Telugu search for consonants (any order)
+function teluguF2($word, $user_search_string, $row)
+{
+    $wordConsonants = [];
+    $searchConsonants = [];
+
+    // Both strings come in as logical characters.
+    // Use telugu_parser.php to check for consonants in the word.    
+    for ($i = 0; $i < count($word); $i++) {
+        if (isConsonant(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseConsonant($word, $i)) {
+            array_push($wordConsonants, $word[$i]);
+        }
+    }
+
+    // Use telugu_parser.php to check for consonants in the search string.
+    for ($i = 0; $i < count($user_search_string); $i++) {
+        if (isConsonant(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseConsonant($user_search_string, $i)) {
+            array_push($searchConsonants, $user_search_string[$i]);
+        }
+    }
+    
+    // Reformat to meet the expectations of the "C" method.
+    $searchString = "";
+    for ($i = 0; $i < count($searchConsonants); $i++) {
+        $searchString .= $searchConsonants[$i];
+
+        if ($i != count($searchConsonants) - 1){
+            $searchString .= ",";
+        }
+    }
+    $word = "";
+    for ($i = 0; $i < count($wordConsonants); $i++) {
+        $word .= $wordConsonants[$i];
+
+        if ($i != count($wordConsonants) - 1){
+            $word .= ",";
+        }
+    }
+
+    // Search using fuzzy string.
+    genericSubstringsAnyOrder($word, $searchString, $row);
+}
+
+// Telugu search for vowels (given order)
+function teluguF3($word, $user_search_string, $row)
+{
+    $wordVowels = [];
+    $searchVowels = [];
+
+    // Both strings come in as logical characters.
+    // Use telugu_parser.php to check for Vowels in the word.    
+    for ($i = 0; $i < count($word); $i++) {
+        if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
+            array_push($wordVowels, $word[$i]);
+        }
+    }
+
+    // Use telugu_parser.php to check for Vowels in the search string.
+    for ($i = 0; $i < count($user_search_string); $i++) {
+        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseVowel($user_search_string, $i)) {
+            array_push($searchVowels, $user_search_string[$i]);
+        }
+    }
+    
+    // Reformat to meet the expectations of the "C" method.
+    $searchString = "";
+    for ($i = 0; $i < count($searchVowels); $i++) {
+        $searchString .= $searchVowels[$i];
+
+        if ($i != count($searchVowels) - 1){
+            $searchString .= ",";
+        }
+    }
+    $word = "";
+    for ($i = 0; $i < count($wordVowels); $i++) {
+        $word .= $wordVowels[$i];
+
+        if ($i != count($wordVowels) - 1){
+            $word .= ",";
+        }
+    }
+
+    // Search using fuzzy string.
+    genericSubstringsGivenOrder($word, $searchString, $row);
+}
+
+// Telugu search for vowels (any order)
+function teluguF4($word, $user_search_string, $row)
+{
+    $wordVowels = [];
+    $searchVowels = [];
+
+    // Both strings come in as logical characters.
+    // Use telugu_parser.php to check for Vowels in the word.    
+    for ($i = 0; $i < count($word); $i++) {
+        if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
+            array_push($wordVowels, $word[$i]);
+        }
+    }
+
+    // Use telugu_parser.php to check for Vowels in the search string.
+    for ($i = 0; $i < count($user_search_string); $i++) {
+        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseVowel($user_search_string, $i)) {
+            array_push($searchVowels, $user_search_string[$i]);
+        }
+    }
+    
+    // Reformat to meet the expectations of the "C" method.
+    $searchString = "";
+    for ($i = 0; $i < count($searchVowels); $i++) {
+        $searchString .= $searchVowels[$i];
+
+        if ($i != count($searchVowels) - 1){
+            $searchString .= ",";
+        }
+    }
+    $word = "";
+    for ($i = 0; $i < count($wordVowels); $i++) {
+        $word .= $wordVowels[$i];
+
+        if ($i != count($wordVowels) - 1){
+            $word .= ",";
+        }
+    }
+
+    // Search using fuzzy string.
+    genericSubstringsAnyOrder($word, $searchString, $row);
+}
 
 // English search for consonants (any order)
 function englishF2($word, $user_search_string, $row)
@@ -315,8 +530,8 @@ function englishF2($word, $user_search_string, $row)
         $success = false;
 
         // If this $searchValues value wasn't in the word, we don't have a match.
-        for ($j = 0; $j < $wordCount; $j++){
-            if ($searchValues[$i] == $wordValues[$j] && !in_array($j, $visitedIndicies)){
+        for ($j = 0; $j < $wordCount; $j++) {
+            if ($searchValues[$i] == $wordValues[$j] && !in_array($j, $visitedIndicies)) {
                 // Remember this index, so it isn't reused.
                 array_push($visitedIndicies, $j);
 
@@ -479,23 +694,6 @@ function englishF3($word, $user_search_string, $row)
     // If we make it this far, success!
     printDecision($row);
 }
-
-/*
-
-
-Input -> RUN
-
-Algorithm:
-
-Identify the BASE consonants in the input string (eg:
-R,N)
-
-Search for all the words containing R and N as the
-base/starting consonants (these consonants can appear
-in any order)
-
-
-*/
 
 // English only!
 // Function to check whether a  
@@ -761,7 +959,7 @@ function englishSubstring($word, $user_search_string, $row)
 }
 
 // Reusable code for substrings in any order search criteria.
-function englishSubstringsAnyOrder($word, $user_search_string, $row)
+function genericSubstringsAnyOrder($word, $user_search_string, $row)
 {
     // Explode user input around ','
     $user_search_string = explode(",", $user_search_string);
@@ -775,7 +973,7 @@ function englishSubstringsAnyOrder($word, $user_search_string, $row)
 }
 
 // Reusable code for substrings in the given order search criteria.
-function englishSubstringsGivenOrder($word, $user_search_string, $row)
+function genericSubstringsGivenOrder($word, $user_search_string, $row)
 {
     // Explode user input around ','
     $user_search_string = explode(",", $user_search_string);

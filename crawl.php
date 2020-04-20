@@ -143,10 +143,10 @@ function crawl($input, $language, $sunset, $depth)
                 // Push the link to the stored array.
                 array_push($visitedUrls, $href);
 
-                // Spit out some useful info.
-                echo "<br>";
-                echo "Processing link " . $href;
-                ob_flush();
+                // TESTING? UNCOMMENT THE LINES BELOW Spit out some useful info.
+                // echo "<br>";
+                // echo "Processing link " . $href;
+                // ob_flush();
 
                 // Crawl the new target.
                 crawl($href, $language, $sunset, $depth - 1);
