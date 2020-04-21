@@ -4,22 +4,24 @@ header('Content-Type: text/html; charset=utf-8');
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
-    <link href="css/style.css" rel="stylesheet" type="text/css"/></head>
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
 <table width="100%" border="0" cellspacing="0" class="headerTable">
-    <tr>
-        <td rowspan="2">
-            <a href="index.php"><img src="images/silc_logo.jpg" width="100%" ></a>
-        </td>
-    </tr>
+	<tr>
+		<td rowspan="2">
+			<a href="index.php"><img src="images/silc_logo.jpg" width="100%"></a>
+		</td>
+	</tr>
 </table>
 <table style="line-height: 2.8" width="100%" cellspacing="0" class="menubar" id="menu-table">
-    <?php
-    if(!isset($_SESSION)){
-        session_start();
-    }
-    if (isset($_SESSION['loggedIn']) == "adminIN"){
-        print "
+	<?php
+	if (!isset($_SESSION)) {
+		session_start();
+	}
+	if (isset($_SESSION['loggedIn']) == "adminIN") {
+		print "
     			 <tr>
 				<td align='left' valign='bottom'>
             				<a href='index.php'>Home</a>
@@ -50,9 +52,8 @@ header('Content-Type: text/html; charset=utf-8');
         			</td>
 		    </tr>
     		";
-    	}
-    	else if (isset($_SESSION['loggedIn']) == "userIN"){
-        print "
+	} else if (isset($_SESSION['loggedIn']) == "userIN") {
+		print "
     			<tr>
 				<td align='left' valign='bottom'>
             				<a href='index.php'>Home</a>
@@ -77,9 +78,8 @@ header('Content-Type: text/html; charset=utf-8');
         			</td>
 		    </tr>
     		";
-    	}
-    	else{
-        print "
+	} else {
+		print "
     			<tr>
 				<td align='left' valign='bottom'>
             				<a href='index.php'>Home</a>
@@ -101,8 +101,9 @@ header('Content-Type: text/html; charset=utf-8');
         			</td>
 		    </tr>
     		";
-    	}
+	}
 
-    ?>
+	?>
 </table>
+
 </html>

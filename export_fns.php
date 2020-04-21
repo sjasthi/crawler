@@ -1,5 +1,6 @@
 <?php
-require ('db_fns.php');
+// Bring in DB support.
+require "db_fns.php";
 
 function exportEngToCSV(){
     $conn = db_connect();

@@ -1,7 +1,6 @@
 <?php
 require "header.php";
-require "db_fns.php";
-include('state.fns.php');
+include ('state.fns.php');
 
 //get English word count
 $engWordsInBankArray = getENGWordsInBank();

@@ -1,15 +1,10 @@
 <?php
-//ini_set("display_errors","On");
-//error_reporting(E_ALL);
-require ('db_fns.php');
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
 
+// Bring in DB support.
+require "db_fns.php";
 
 function checkURLExists($crawlInput, $crawlURL){
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
         $query = "select * from $crawlURL where crawledurl='".$crawlInput."'";
         $result = $conn->query($query);
         if ((!$result) || ($result->num_rows != 0)) {
@@ -21,7 +16,7 @@ function checkURLExists($crawlInput, $crawlURL){
 }
 
 function checkWordEngExists($queriedResult){
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     $query = "select * from english where word='".$queriedResult."'";
     $result = $conn->query($query);
     if ((!$result) || ($result->num_rows != 0)) {
@@ -33,7 +28,7 @@ function checkWordEngExists($queriedResult){
 }
 
 function checkWordTelExists($queriedResult){
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     $query = "select * from telugu where word='".$queriedResult."'";
     $result = $conn->query($query);
     if ((!$result) || ($result->num_rows != 0)) {
@@ -46,7 +41,7 @@ function checkWordTelExists($queriedResult){
 
 function insertURLToDB($crawlInput, $sunset, $crawlURL){
 // inserts a new crawled url into the database
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     $insert_date = date("m/d/Y");
     // check crawled url does not already exist
     // checkExists($crawlInput);
@@ -66,7 +61,7 @@ function insertURLToDB($crawlInput, $sunset, $crawlURL){
 
 function insertEngTXTToDB($textFound){
 // inserts a new crawled url into the database
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     // check crawled url does not already exist
     // checkExists($crawlInput);
     // insert new crawled url
@@ -84,7 +79,7 @@ function insertEngTXTToDB($textFound){
 
 function insertTelTXTToDB($input){
 // inserts a new crawled url into the database
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
     // check crawled url does not already exist
     // checkExists($crawlInput);
     // insert new crawled url

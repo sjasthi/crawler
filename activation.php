@@ -3,13 +3,12 @@ require "header.php";
 $email = $_GET['email'];
 $token = stripslashes($_POST['sec-code']);
 $validate_code = true;
-DEFINE('DATABASE_HOST', 'localhost');
-DEFINE('DATABASE_DATABASE', 'crawler');
-DEFINE('DATABASE_USER', 'root');
-DEFINE('DATABASE_PASSWORD', '');
+
+// Bring in DB support.
+require "db_fns.php";
 
 if (isset($_POST['activation'])){
-    $conn = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_DATABASE);
+    $conn = db_connect();
        if (mysqli_connect_errno()) {
            echo("<p>Error creating Database Connection</p>");
            exit;
