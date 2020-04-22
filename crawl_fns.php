@@ -126,10 +126,10 @@ function sanitizeTelInput($data)
 {
     $data = trim($data); //delete spaces before and after
     $data = stripslashes($data); //get rid of slashes
+    $data = htmlspecialchars($data); //get rid of html special characters
     $data = html_entity_decode($data); //get rid of html spaces and quotes etc
     $data = preg_replace('/[A-Za-z0-9]/', ' ', $data); //leave alpha and space only
     $data = preg_replace('/ +/', ' ', $data);
-
 
     return $data;
 }

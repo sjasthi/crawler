@@ -48,14 +48,9 @@ function insertURLToDB($crawlInput, $sunset, $crawlURL){
     // insert new crawled url
     $query = "insert into $crawlURL values('".$crawlInput."', '".$insert_date."')";
 
-
     $result = $conn->query($query);
     if (!$result) {
         return false;
-    } else {
-        //$result = array($result);
-        // return db2_fetch_array($result);
-        return array_values($result);
     }
 }
 
