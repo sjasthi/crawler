@@ -315,41 +315,34 @@ function isTeluguBaseVowel($word, $i)
 // Telugu search for consonants (given order)
 function teluguF1($word, $user_search_string, $row)
 {
-    $wordConsonants = [];
-    $searchConsonants = [];
+    //$wordValues = [];
+    $searchValues = [];
 
-    // Both strings come in as logical characters.
-    // Use telugu_parser.php to check for consonants in the word.    
-    for ($i = 0; $i < count($word); $i++) {
-        if (isConsonant(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseConsonant($word, $i)) {
-            array_push($wordConsonants, $word[$i]);
-        }
-    }
+    // // Both strings come in as logical characters.
+    // // Use telugu_parser.php to check for consonants in the word.    
+    // for ($i = 0; $i < count($word); $i++) {
+    //     if (isVowel(explode_telugu(json_encode($word[$i]))[0]) == false) {
+    //         array_push($wordValues, $word[$i]);
+    //     }
+    // }
 
     // Use telugu_parser.php to check for consonants in the search string.
     for ($i = 0; $i < count($user_search_string); $i++) {
-        if (isConsonant(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseConsonant($user_search_string, $i)) {
-            array_push($searchConsonants, $user_search_string[$i]);
+        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) == false) {
+            array_push($searchValues, $user_search_string[$i]);
         }
     }
-    
+
     // Reformat to meet the expectations of the "C" method.
     $searchString = "";
-    for ($i = 0; $i < count($searchConsonants); $i++) {
-        $searchString .= $searchConsonants[$i];
+    $word = implode($word);
+    for ($i = 0; $i < count($searchValues); $i++) {
+        $searchString .= $searchValues[$i];
 
-        if ($i != count($searchConsonants) - 1){
+        if ($i != count($searchValues) - 1) {
             $searchString .= ",";
         }
-    }
-    $word = "";
-    for ($i = 0; $i < count($wordConsonants); $i++) {
-        $word .= $wordConsonants[$i];
-
-        if ($i != count($wordConsonants) - 1){
-            $word .= ",";
-        }
-    }
+    }  
 
     // Search using fuzzy string.
     genericSubstringsGivenOrder($word, $searchString, $row);
@@ -358,41 +351,34 @@ function teluguF1($word, $user_search_string, $row)
 // Telugu search for consonants (any order)
 function teluguF2($word, $user_search_string, $row)
 {
-    $wordConsonants = [];
-    $searchConsonants = [];
+    //$wordValues = [];
+    $searchValues = [];
 
-    // Both strings come in as logical characters.
-    // Use telugu_parser.php to check for consonants in the word.    
-    for ($i = 0; $i < count($word); $i++) {
-        if (isConsonant(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseConsonant($word, $i)) {
-            array_push($wordConsonants, $word[$i]);
-        }
-    }
+    // // Both strings come in as logical characters.
+    // // Use telugu_parser.php to check for consonants in the word.    
+    // for ($i = 0; $i < count($word); $i++) {
+    //     if (isVowel(explode_telugu(json_encode($word[$i]))[0]) == false) {
+    //         array_push($wordValues, $word[$i]);
+    //     }
+    // }
 
     // Use telugu_parser.php to check for consonants in the search string.
     for ($i = 0; $i < count($user_search_string); $i++) {
-        if (isConsonant(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseConsonant($user_search_string, $i)) {
-            array_push($searchConsonants, $user_search_string[$i]);
+        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) == false) {
+            array_push($searchValues, $user_search_string[$i]);
         }
     }
-    
+
     // Reformat to meet the expectations of the "C" method.
     $searchString = "";
-    for ($i = 0; $i < count($searchConsonants); $i++) {
-        $searchString .= $searchConsonants[$i];
+    $word = implode($word);
+    for ($i = 0; $i < count($searchValues); $i++) {
+        $searchString .= $searchValues[$i];
 
-        if ($i != count($searchConsonants) - 1){
+        if ($i != count($searchValues) - 1) {
             $searchString .= ",";
         }
-    }
-    $word = "";
-    for ($i = 0; $i < count($wordConsonants); $i++) {
-        $word .= $wordConsonants[$i];
-
-        if ($i != count($wordConsonants) - 1){
-            $word .= ",";
-        }
-    }
+    }    
 
     // Search using fuzzy string.
     genericSubstringsAnyOrder($word, $searchString, $row);
@@ -401,39 +387,32 @@ function teluguF2($word, $user_search_string, $row)
 // Telugu search for vowels (given order)
 function teluguF3($word, $user_search_string, $row)
 {
-    $wordVowels = [];
-    $searchVowels = [];
+    //$wordValues = [];
+    $searchValues = [];
 
-    // Both strings come in as logical characters.
-    // Use telugu_parser.php to check for Vowels in the word.    
-    for ($i = 0; $i < count($word); $i++) {
-        if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
-            array_push($wordVowels, $word[$i]);
-        }
-    }
+    // // Both strings come in as logical characters.
+    // // Use telugu_parser.php to check for Vowels in the word.    
+    // for ($i = 0; $i < count($word); $i++) {
+    //     if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
+    //         array_push($wordValues, $word[$i]);
+    //     }
+    // }
 
     // Use telugu_parser.php to check for Vowels in the search string.
     for ($i = 0; $i < count($user_search_string); $i++) {
         if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseVowel($user_search_string, $i)) {
-            array_push($searchVowels, $user_search_string[$i]);
+            array_push($searchValues, $user_search_string[$i]);
         }
     }
-    
+
     // Reformat to meet the expectations of the "C" method.
     $searchString = "";
-    for ($i = 0; $i < count($searchVowels); $i++) {
-        $searchString .= $searchVowels[$i];
+    $word = implode($word);
+    for ($i = 0; $i < count($searchValues); $i++) {
+        $searchString .= $searchValues[$i];
 
-        if ($i != count($searchVowels) - 1){
+        if ($i != count($searchValues) - 1) {
             $searchString .= ",";
-        }
-    }
-    $word = "";
-    for ($i = 0; $i < count($wordVowels); $i++) {
-        $word .= $wordVowels[$i];
-
-        if ($i != count($wordVowels) - 1){
-            $word .= ",";
         }
     }
 
@@ -444,39 +423,32 @@ function teluguF3($word, $user_search_string, $row)
 // Telugu search for vowels (any order)
 function teluguF4($word, $user_search_string, $row)
 {
-    $wordVowels = [];
-    $searchVowels = [];
+    //$wordValues = [];
+    $searchValues = [];
 
-    // Both strings come in as logical characters.
-    // Use telugu_parser.php to check for Vowels in the word.    
-    for ($i = 0; $i < count($word); $i++) {
-        if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
-            array_push($wordVowels, $word[$i]);
-        }
-    }
+    // // Both strings come in as logical characters.
+    // // Use telugu_parser.php to check for Vowels in the word.    
+    // for ($i = 0; $i < count($word); $i++) {
+    //     if (isVowel(explode_telugu(json_encode($word[$i]))[0]) && isTeluguBaseVowel($word, $i)) {
+    //         array_push($wordValues, $word[$i]);
+    //     }
+    // }
 
     // Use telugu_parser.php to check for Vowels in the search string.
     for ($i = 0; $i < count($user_search_string); $i++) {
-        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0]) && isTeluguBaseVowel($user_search_string, $i)) {
-            array_push($searchVowels, $user_search_string[$i]);
+        if (isVowel(explode_telugu(json_encode($user_search_string[$i]))[0])) {
+            array_push($searchValues, $user_search_string[$i]);
         }
     }
-    
+
     // Reformat to meet the expectations of the "C" method.
     $searchString = "";
-    for ($i = 0; $i < count($searchVowels); $i++) {
-        $searchString .= $searchVowels[$i];
+    $word = implode($word);
+    for ($i = 0; $i < count($searchValues); $i++) {
+        $searchString .= $searchValues[$i];
 
-        if ($i != count($searchVowels) - 1){
+        if ($i != count($searchValues) - 1) {
             $searchString .= ",";
-        }
-    }
-    $word = "";
-    for ($i = 0; $i < count($wordVowels); $i++) {
-        $word .= $wordVowels[$i];
-
-        if ($i != count($wordVowels) - 1){
-            $word .= ",";
         }
     }
 
