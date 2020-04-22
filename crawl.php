@@ -73,34 +73,60 @@ function crawl($input, $language, $sunset, $depth)
         return;
     }
 
-    $html = get_url_contents($input); //grab ALL html style tags
-    $stripReady = preg_replace('/(<\/[^>]+?>)(<[^>\/][^>]*?>)/', '$1 $2', $html); //add space after open/close HTML tag
-    $strippedHTML = strip_tags($stripReady); //php function to strip html tags
-    if ($language === 'english') {
-        $cleanCrawl = sanitizeInput($strippedHTML); //run function to clean up miscellaneous characters, alphanumeric numbers etc
-        $text = explode(" ", $cleanCrawl);  //split up html content
-        foreach ($text as $engWord) {  //for each "split"
-            //http://www.gamefaqs.com/ps2/516587-kingdom-hearts/faqs/20007  //using this to crawl
+    // Grab ALL html style tags and strip them.
+    $html = get_url_contents($input);
+    $stripReady = preg_replace('/(<\/[^>]+?>)(<[^>\/][^>]*?>)/', '$1 $2', $html);
+    $strippedHTML = strip_tags($stripReady);
 
-            checkWordEngExists($engWord); //check if word exists in database
-            if (checkWordEngExists($engWord) == false) {  //if it does not exist, enter into the database
-                insertEngTXTToDB($engWord);
+    // English
+    if ($language === 'english') {
+
+        // Sanatize and split the words by space.
+        $cleanCrawl = sanitizeInput($strippedHTML);
+        $text = explode(" ", $cleanCrawl);
+
+        // Iterate over each word split..
+        foreach ($text as $item) {
+
+            // Ensure that special characters have been removed.
+            $item = preg_replace('/[][(){},.;:""_\s=!?<>%\/]/', "", $item);
+
+            // Check if word (or characters) exists in database.
+            checkWordEngExists($item);
+
+            // If not, add it to the database.
+            if (checkWordEngExists($item) == false) {
+                insertEngTXTToDB($item);
             }
         }
     }
-    if ($language === 'telugu') {
+
+    // Telugu.
+    else if ($language === 'telugu') {
+
+        // Sanatize and split the words by space.
         $cleanCrawl = sanitizeTelInput($strippedHTML);
-        $text = explode(" ", $cleanCrawl);  //split the words by a space
-        foreach ($text as $telWord) {
-            checkWordTelExists($telWord); //check if word (or characters) exists in database
-            if (checkWordTelExists($telWord) == false) {  //if it does not exist, enter into the database
-                if (inTelRange($telWord) == true) {
-                    insertTelTXTToDB($telWord);
+        $text = explode(" ", $cleanCrawl);
+
+        // Iterate over each word split...
+        foreach ($text as $item) {
+
+            // Ensure that special characters have been removed.
+            $item = preg_replace('/[][(){},.;:""_\s=!?<>%\/]/', "", $item);
+
+            // Check if word (or characters) exists in database.
+            checkWordTelExists($item);
+
+            // If not, add it to the database.
+            if (checkWordTelExists($item) == false) {
+                if (inTelRange($item) == true) {
+                    insertTelTXTToDB($item);
                 }
             }
         }
     }
 
+    // Insert the URL to the DB.
     insertURLToDB($input, $sunset, $crawlURL);
 
     //check depth by putting URLS found into an array, and crawl new url found, by depth.
