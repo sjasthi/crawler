@@ -7,9 +7,11 @@
  */
 session_start();
 
-if($_SESSION['loggedIn'] != "adminIN"){
-    header("Location:/login.php");
-}
+// temporary disable the admin check
+// as bluehost login has some issue
+//if($_SESSION['loggedIn'] != "adminIN"){
+//    header("Location:/login.php");
+//}
 
 require "header.php";
 include('indic-wp-master/telugu_parser.php');
@@ -194,8 +196,8 @@ echo $existed_words;
 ?>
         </textarea>
         <form action="<?=$_SERVER['PHP_SELF']; ?>" method="post" mane="parsing_form" id="parsing">
-            <input type="radio" name="language" value="english" checked>English
-            <input type="radio" name="language" value="telugu">Telugu
+            <input type="radio" name="language" value="english">English
+            <input type="radio" name="language" value="telugu" checked>Telugu
             <button type="submit" value="parse" name="parse">Parse</button>
         </form>
     </div>

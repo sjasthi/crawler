@@ -2,9 +2,9 @@
 
 session_start();
 
-if ($_SESSION['loggedIn'] != "adminIN") {
-    header("Location:/login.php");
-}
+// if ($_SESSION['loggedIn'] != "adminIN") {
+//     header("Location:/login.php");
+// }
 
 require "header.php";
 include('crawl_fns.php');
