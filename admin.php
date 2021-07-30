@@ -27,7 +27,7 @@
 		<a href="user_admin.php"><img src="images/useradmin_logo.PNG" alt="useradmin" height="120" width="15%"></a><br />
 		<a href=""><img src="images/configure_logo.PNG" alt="configure" height="120" width="15%"></a>
 		<a href=""><img src="images/import_logo.PNG" alt="import" height="120" width="15%"></a>
-		<a href=""><img src="images/export_logo.PNG" alt="export" height="120" width="15%"></a>
+		<a href="export.php"><img src="images/export_logo.PNG" alt="export" height="120" width="15%"></a>
 		<a href=""><img src="images/backup_logo.PNG" alt="backup" height="120" width="15%"></a>
 		<a href=""><img src="images/help_logo.PNG" alt="help" height="120" width="15%"></a><br />
 		<a href="telugu_characters_frequency_table.php?t=frequency"><img src="images/telegu_frequency_logo.PNG" alt="frequency" height="120" width="15%"></a>

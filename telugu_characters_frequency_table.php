@@ -113,7 +113,7 @@ function calculateFrequencies()
 <html>
 
 <head>
-    <title>Telegu Count</title>
+    <title>Telugu Count</title>
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -163,7 +163,7 @@ function calculateFrequencies()
     <div id="wrap">
         <div class="container">
             <span id="message"><?php echo $message ?></span>
-            <h3>Telegu Count</h3>
+            <h3>Telugu Count</h3>
 
             <table id="info" cellpadding="0" cellspacing="0" class="display table table-striped table-bordered" width="100%">
 
