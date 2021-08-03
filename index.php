@@ -4,7 +4,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
+<title>Crawler</title>
     <div id="container">
         <div id="body">
             <div id="indexDiv"><h1>Welcome!</h1>

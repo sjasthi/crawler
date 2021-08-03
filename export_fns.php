@@ -1,8 +1,10 @@
 <?php
 // Bring in DB support.
 require "db_fns.php";
+include('PHPExcel/PHPExcel.php');
 
 function exportEngToCSV(){
+    echo "HERE";
     $conn = db_connect();
     $filename = "EnglishWords-CSV". date('Ymd').".csv";
 
@@ -10,7 +12,7 @@ function exportEngToCSV(){
     header('Content-Disposition: attachment; filename='.$filename);
 
     $out = fopen('php://output', 'w');
-    //$out = fopen("C:\\Users\\June\\Desktop\\export dump\\".$filename, 'w');
+    $out = fopen("C:\xampp\htdocs\crawler".$filename, 'w');
 
     $query = "SELECT word FROM english order by word";
     $result = $conn->query($query);
