@@ -1,13 +1,10 @@
 <?php
 
-//test file to hold progress indicator
-$file = "./progress indicator.txt";
-
 session_start();
 
-if ($_SESSION['loggedIn'] != "adminIN") {
-    header("Location:/login.php");
-}
+// if ($_SESSION['loggedIn'] != "adminIN") {
+//     header("Location:/login.php");
+// }
 
 require "header.php";
 include('crawl_fns.php');
@@ -21,10 +18,6 @@ $crawlURL = "crawlurl";
 $messagePrompt = "";
 $visitedUrls = [];
 
-$totalURLCrawled = 0;
-$totalUniqueWords = 0;
-$totalExistingWords = 0;
-
 if ($sunset === 'infinite') { //if drop down is set to infinite, send 0 to inserturlDB
     $sunset = 0;
 } elseif ($sunset === 'day') { //if drop down is set to day, send 1 to inserturlDB
@@ -37,7 +30,7 @@ if ($sunset === 'infinite') { //if drop down is set to infinite, send 0 to inser
     $sunset = 365;
 }
 
-//get admin url input from text area*************************
+//get admin url input from textarea*************************
 if (isset($_POST['crawlInput'])) {
     $crawlInput = explode(" ", $_POST['crawlInput']);
 
@@ -55,48 +48,12 @@ if (isset($_POST['crawlInput'])) {
         if (checkURLExists($input, $crawlURL) == true) {  //if the url exists, it will not crawl.
             $messagePrompt = "Duplicate Found! Not added to database.";
         } else {
-
-
-            //append to progress indicator
-            file_put_contents($file,"START\n",FILE_APPEND);
-            file_put_contents($file,"Crawl Started\n",FILE_APPEND);
-            file_put_contents($file,"Crawling started for $input\n",FILE_APPEND);
-
-            //progress message
-            echo "<script type='text/javascript'>alert('Crawl started')</script>";
-            echo "<br>";
             echo "CRAWLING.  Please wait, prompt will appear when finished.";
-            echo "<br>";
-            echo "Crawling started for $input";
             crawl($input, $language, $sunset, $depth);
-            echo "<br>";
             echo "<script type='text/javascript'>alert('Crawl is finished!!')</script>";
         }
     }
-
-    //End process message
-
-
-    echo "<br>";
-    echo "All URLs are crawled.";
-    echo "<br>";
-    echo "$totalUniqueWords new words are inserted.";
-    echo "<br>";
-    echo "$totalExistingWords words are ignored.";
-    echo "<br>";
-    echo "Number of URLs processed in this crawl: $totalURLCrawled";
-    echo "<br>";
-    echo "END.";
-
-    //append to progress indicator
-    file_put_contents($file, "All URLs are crawled.\n", FILE_APPEND);
-    file_put_contents($file, "$totalUniqueWords new words are inserted.\n", FILE_APPEND);
-    file_put_contents($file, "$totalExistingWords words are ignored.\n", FILE_APPEND);
-    file_put_contents($file, "Number of URLs processed in this crawl: $totalURLCrawled\n", FILE_APPEND);
-    file_put_contents($file, "END\n", FILE_APPEND);
-	file_put_contents($file, "==================================================================================\n\n", FILE_APPEND);
 }
-
 
 function get_url_contents($url)
 {
@@ -110,14 +67,6 @@ function get_url_contents($url)
 
 function crawl($input, $language, $sunset, $depth)
 {
-    $uniqueWords = 0;
-    $existingWords = 0;
-    global $totalURLCrawled;
-    $totalURLCrawled++;
-    global $totalExistingWords;
-    global $totalUniqueWords;
-    global $file;
-
     $seen = array();
     global $crawlURL;
     if (($depth == 0) or (in_array($input, $seen))) {
@@ -145,29 +94,11 @@ function crawl($input, $language, $sunset, $depth)
             // Check if word (or characters) exists in database.
             checkWordEngExists($item);
 
-            if(checkWordEngExists($item) == true){
-                $existingWords++;
-                $totalExistingWords++;
-            }
-
             // If not, add it to the database.
             if (checkWordEngExists($item) == false) {
-                $uniqueWords++;
-                $totalUniqueWords++;
                 insertEngTXTToDB($item);
             }
         }
-
-        $uniqueWordsMessage = "$uniqueWords unique words are inserted";
-
-        echo "<br>";
-        echo "$uniqueWords unique words are inserted";
-        echo "<br>";
-        echo "$existingWords existing words are ignored";
-
-        //add to text file
-        file_put_contents($file, "$uniqueWords unique words are inserted\n", FILE_APPEND);
-        file_put_contents($file, "$existingWords existing words are ignored\n\n", FILE_APPEND);
     }
 
     // Telugu.
@@ -186,30 +117,14 @@ function crawl($input, $language, $sunset, $depth)
             // Check if word (or characters) exists in database.
             checkWordTelExists($item);
 
-            if(checkWordTelExists($item)){
-                $existingWords++;
-                $totalExistingWords++;
-            }
-
             // If not, add it to the database.
             if (checkWordTelExists($item) == false) {
-                $uniqueWords++;
-                $totalUniqueWords++;
                 if (inTelRange($item) == true) {
                     insertTelTXTToDB($item);
                 }
             }
         }
-
-        echo "<br>";
-        echo "$uniqueWords unique words are inserted";
-        echo "<br>";
-        echo "$existingWords existing words are ignored";
-
-        file_put_contents($file, "$uniqueWords unique words are inserted\n", FILE_APPEND);
-        file_put_contents($file, "$existingWords existing words are ignored\n\n", FILE_APPEND);
     }
-
 
     // Insert the URL to the DB.
     insertURLToDB($input, $sunset, $crawlURL);
@@ -219,7 +134,7 @@ function crawl($input, $language, $sunset, $depth)
 
         // Pull URL from file.
         $stripped_file = strip_tags($html, "<a>");
-        
+
         // Check URL.
         preg_match_all("/<a[\s]+[^>]*?href[\s]?=[\s\"\']+" . "(.*?)[\"\']+.*?>" . "([^<]+|.*?)?<\/a>/", $stripped_file, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
@@ -253,14 +168,11 @@ function crawl($input, $language, $sunset, $depth)
 
                 // Push the link to the stored array.
                 array_push($visitedUrls, $href);
-                $totalURLCrawled++;
 
                 // TESTING? UNCOMMENT THE LINES BELOW Spit out some useful info.
-                echo "<br>";
-                echo "<br>";
-                echo "Processing link " . $href;
-                file_put_contents($file, "Processing link " . $href, FILE_APPEND);
-                ob_flush();
+                // echo "<br>";
+                // echo "Processing link " . $href;
+                // ob_flush();
 
                 // Crawl the new target.
                 crawl($href, $language, $sunset, $depth - 1);

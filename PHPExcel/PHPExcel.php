@@ -582,7 +582,7 @@ class PHPExcel
         if (!isset($this->workSheetCollection[$pIndex])) {
             $numSheets = $this->getSheetCount();
             throw new PHPExcel_Exception(
-                "Your requested sheet index: {$pIndex} is out of bounds. The actual number of sheets is {$numSheets}."
+                "Your requested sheet index: [$pIndex] is out of bounds. The actual number of sheets is [$numSheets]."
             );
         }
 
@@ -693,7 +693,7 @@ class PHPExcel
 
         if ($pIndex > $numSheets - 1) {
             throw new PHPExcel_Exception(
-                "You tried to set a sheet active by the out of bounds index: {$pIndex}. The actual number of sheets is {$numSheets}."
+                "You tried to set a sheet active by the out of bounds index: [$pIndex]. The actual number of sheets is [$numSheets]."
             );
         } else {
             $this->activeSheetIndex = $pIndex;
@@ -745,7 +745,7 @@ class PHPExcel
     public function addExternalSheet(PHPExcel_Worksheet $pSheet, $iSheetIndex = null)
     {
         if ($this->sheetNameExists($pSheet->getTitle())) {
-            throw new PHPExcel_Exception("Workbook already contains a worksheet named '{$pSheet->getTitle()}'. Rename the external sheet first.");
+            throw new PHPExcel_Exception("Workbook already contains a worksheet named '[$pSheet->getTitle()]'. Rename the external sheet first.");
         }
 
         // count how many cellXfs there are in this workbook currently, we will need this below

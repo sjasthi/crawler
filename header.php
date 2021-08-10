@@ -1,5 +1,9 @@
 <?php
+ob_start();
 header('Content-Type: text/html; charset=utf-8');
+if (!isset($_SESSION)) {
+	session_start();
+}
 ?>
 <!DOCTYPE html>
 
@@ -17,9 +21,6 @@ header('Content-Type: text/html; charset=utf-8');
 </table>
 <table style="line-height: 2.8" width="100%" cellspacing="0" class="menubar" id="menu-table">
 	<?php
-	if (!isset($_SESSION)) {
-		session_start();
-	}
 	if (isset($_SESSION['loggedIn']) == "adminIN") {
 		print "
     			 <tr>

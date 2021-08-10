@@ -1,4 +1,6 @@
 <?php
+ini_set("display_errors","On");
+error_reporting(E_ALL);
 require "header.php";
 include ('state.fns.php');
 
@@ -57,7 +59,7 @@ function drawChart() {
         [<?php echo getTelLeng10();?> + " Characters", <?php echo getTelTop10();?>]
     ]);
 
-    var data3 = google.visualization.arrayToDataTable([
+    var data3 = google.visualization.arrayToDataTable([-
         ['characters of word', 'number of words'],
         ['<?php echo getEngTopAlpha1();?>', <?php echo getEngTopAlphaCount1();?>],
         ['<?php echo getEngTopAlpha2();?>', <?php echo getEngTopAlphaCount2();?>],
