@@ -1,18 +1,20 @@
 <?php
+ob_start();
+
+//ini_set('display_errors', 'on');
+//error_reporting(E_ALL);
+
 require "header.php";
 
 // Bring in DB support.
 require "db_fns.php";
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+
 
 if (isset($_POST['submit'])) {
     $user = trim($_POST['uname']);
     $passwd = trim($_POST['pword']);
     $errorMessage = "";
-
     $dbcn = db_connect();
 
     if (mysqli_connect_errno()) {

@@ -1,5 +1,6 @@
 <?php
-
+ini_set("display_errors","On");
+error_reporting(E_ALL);
 $alphabet = array();
 
 // Bring in DB support.
@@ -183,54 +184,51 @@ if ($numRows3 > 0) {
     $test = array("A" => $a, "B" => $b);
     arsort($alphabet);
 
-    $counter = "0";
+    $counter = 0;
 
+    //while ($counter++ < 10 && list($key, $val) = each($alphabet)) {
     foreach($alphabet as $key => $val) {
-
-        if($counter > 10){
-            break;
-        }
-
-        if ($counter == 1) {
+        echo "$counter<br>";
+        if ($counter == 0) {
             $eTopAlpha1 = $val;
             $eAlphabet1 = $key;
             $counter++;
-        } else if ($counter == 2) {
+        } else if ($counter == 1) {
             $eTopAlpha2 = $val;
             $eAlphabet2 = $key;
             $counter++;
-        } else if ($counter == 3) {
+        } else if ($counter == 2) {
             $eTopAlpha3 = $val;
             $eAlphabet3 = $key;
             $counter++;
-        } else if ($counter == 4) {
+        } else if ($counter == 3) {
             $eTopAlpha4 = $val;
             $eAlphabet4 = $key;
             $counter++;
-        } else if ($counter == 5) {
+        } else if ($counter == 4) {
             $eTopAlpha5 = $val;
             $eAlphabet5 = $key;
             $counter++;
-        } else if ($counter == 6) {
+        } else if ($counter == 5) {
             $eTopAlpha6 = $val;
             $eAlphabet6 = $key;
             $counter++;
-        } else if ($counter == 7) {
+        } else if ($counter == 6) {
             $eTopAlpha7 = $val;
             $eAlphabet7 = $key;
             $counter++;
-        } else if ($counter == 8) {
+        } else if ($counter == 7) {
             $eTopAlpha8 = $val;
             $eAlphabet8 = $key;
             $counter++;
-        } else if ($counter == 9) {
+        } else if ($counter == 8) {
             $eTopAlpha9 = $val;
             $eAlphabet9 = $key;
             $counter++;
-        } else if ($counter == 10) {
+        } else if ($counter == 9) {
             $eTopAlpha10 = $val;
             $eAlphabet10 = $key;
-            $counter++;
+            break;
         }
     }
 }
